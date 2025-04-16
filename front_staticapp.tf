@@ -2,9 +2,7 @@
 resource "azurerm_resource_group" "rgfront" {
   name     = "rg-${local.name_prefix}-front-${local.name_suffix}"
   location = local.location
-  tags = {
-    BU = "Main_${local.environment}"
-  }
+  tags = local.tags
 }
 
 resource "azurerm_static_web_app" "staticappfront" {
@@ -18,9 +16,7 @@ resource "azurerm_static_web_app" "staticappfront" {
       repository_token
      ]
   }
-  tags = {
-    BU = "Main_${local.environment}"
-  }
+  tags = local.tags
 }
 
 resource "azurerm_static_web_app_custom_domain" "staticappcustomdomain" {

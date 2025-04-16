@@ -1,10 +1,8 @@
 
 resource "azurerm_resource_group" "rgback" {
-  name     = "rg-${local.name_prefix}-back-${local.name_suffix}"
-  location = var.location
-  tags = {
-    BU = "Main_${local.environment}"
-  }
+  name      = "rg-${local.name_prefix}-back-${local.name_suffix}"
+  location  = var.location
+  tags      = local.tags
 }
 
 resource "azurerm_service_plan" "aspback" {
@@ -13,9 +11,8 @@ resource "azurerm_service_plan" "aspback" {
   location            = azurerm_resource_group.rgback.location
   os_type             = "Linux"
   sku_name            = "F1"
-  tags = {
-    BU = "Main_${local.environment}"
-  }
+  tags                = local.tags
+  
 }
 
 resource "azurerm_linux_web_app" "webappback" {
@@ -30,7 +27,5 @@ resource "azurerm_linux_web_app" "webappback" {
       python_version = "3.13"
     }
   }
-  tags = {
-    BU = "Main_${local.environment}"
-  }
+  tags = local.tags
 }
