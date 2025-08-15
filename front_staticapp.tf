@@ -21,6 +21,6 @@ resource "azurerm_static_web_app" "staticappfront" {
 
 resource "azurerm_static_web_app_custom_domain" "staticappcustomdomain" {
   static_web_app_id = azurerm_static_web_app.staticappfront.id
-  domain_name       = "${local.environment}.${var.custom_domain_front}" #pendiente, cambiar por ambiente
+  domain_name       = "${local.environment}.${var.custom_domain_front}"
   validation_type   = "cname-delegation"
 }
