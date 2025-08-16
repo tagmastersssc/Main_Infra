@@ -23,8 +23,12 @@ module "Back" {
     tags                                            = local.tags
     serviceprincipalbackclients_object_id           = var.serviceprincipalbackclients_object_id
     app_settings                                    = {
-        OpenAIBackend_URL   = module.OpenAI.azurerm_ai_services_endpoint
-        OpenAIBackend_KEY   = module.OpenAI.azurerm_ai_services_primary_access_key
+        SCM_DO_BUILD_DURING_DEPLOYMENT              = "true"
+        OpenAIBackend_URL                           = module.OpenAI.azurerm_ai_services_endpoint
+        OpenAIBackend_KEY                           = module.OpenAI.azurerm_ai_services_primary_access_key
+        OpenAIBackend_MODEL                         = var.cognitive_deployment_model_name
+        OpenAIBackend_DEPLOYMENT                    = module.OpenAI.azurerm_cognitive_deployment_model_name
+        OpenAIBackend_VERSION                       = var.cognitive_deployment_model_api_version
         }
 }
 
