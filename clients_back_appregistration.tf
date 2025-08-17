@@ -9,9 +9,9 @@ resource "azuread_service_principal" "serviceprincipalbackclients" {
 }
 
 resource "azuread_application_federated_identity_credential" "ficgithubbackclients" {
-  application_id        = azuread_application_registration.githubappregistrationbackclients.id
-  audiences             = ["api://AzureADTokenExchange"]
-  issuer                = "https://token.actions.githubusercontent.com"
-  display_name          = "clients-github-actions-cred-${local.name_prefix}-back-${local.name_suffix}"
-  subject               = "${var.clients_github_back_repo}:environment:${local.environment}"
+  application_id = azuread_application_registration.githubappregistrationbackclients.id
+  audiences      = ["api://AzureADTokenExchange"]
+  issuer         = "https://token.actions.githubusercontent.com"
+  display_name   = "clients-github-actions-cred-${local.name_prefix}-back-${local.name_suffix}"
+  subject        = "${var.clients_github_back_repo}:environment:${local.environment}"
 }

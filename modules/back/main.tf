@@ -16,7 +16,7 @@ resource "azurerm_service_plan" "aspback" {
 }
 
 resource "azurerm_linux_web_app" "webappback" {
-  name                  = "${var.client}-${var.name_suffix}"
+  name                  = "${var.client}-back-${var.name_suffix}"
   resource_group_name   = azurerm_resource_group.rgback.name
   location              = azurerm_service_plan.aspback.location
   service_plan_id       = azurerm_service_plan.aspback.id

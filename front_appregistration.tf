@@ -15,9 +15,9 @@ resource "azurerm_role_assignment" "roleassignmentfront" {
 }
 
 resource "azuread_application_federated_identity_credential" "ficgithubfront" {
-  application_id        = azuread_application_registration.githubappregistrationfront.id
-  audiences             = ["api://AzureADTokenExchange"]
-  issuer                = "https://token.actions.githubusercontent.com"
-  display_name          = "github-actions-cred-${local.name_prefix}-front-${local.name_suffix}"
-  subject               = "${var.github_front_repo}:environment:${local.environment}"
+  application_id = azuread_application_registration.githubappregistrationfront.id
+  audiences      = ["api://AzureADTokenExchange"]
+  issuer         = "https://token.actions.githubusercontent.com"
+  display_name   = "github-actions-cred-${local.name_prefix}-front-${local.name_suffix}"
+  subject        = "${var.github_front_repo}:environment:${local.environment}"
 }

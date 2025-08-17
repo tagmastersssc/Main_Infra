@@ -1,8 +1,8 @@
 
 resource "azurerm_resource_group" "rgback" {
-  name      = "rg-${local.name_prefix}-back-${local.name_suffix}"
-  location  = var.location
-  tags      = local.tags
+  name     = "rg-${local.name_prefix}-back-${local.name_suffix}"
+  location = var.location
+  tags     = local.tags
 }
 
 resource "azurerm_service_plan" "aspback" {
@@ -12,7 +12,7 @@ resource "azurerm_service_plan" "aspback" {
   os_type             = "Linux"
   sku_name            = "F1"
   tags                = local.tags
-  
+
 }
 
 resource "azurerm_linux_web_app" "webappback" {

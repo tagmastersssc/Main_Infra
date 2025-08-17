@@ -1,21 +1,21 @@
 terraform {
   required_providers {
     azurerm = {
-        source = "hashicorp/azurerm"
+      source = "hashicorp/azurerm"
     }
   }
 
   backend "azurerm" {
-    use_cli                 = true
-    use_azuread_auth        = true
-    storage_account_name    = "bilaiterraform"
-    container_name          = "tfstate"
-    key                     = "terraform.tfstate"
+    use_cli              = true
+    use_azuread_auth     = true
+    storage_account_name = "bilaiterraform"
+    container_name       = "tfstate"
+    key                  = "terraform.tfstate"
   }
 }
 
 provider "azurerm" {
-    features {
-    }
-    subscription_id = var.subscription_id
+  features {
+  }
+  subscription_id = var.subscription_id
 }
