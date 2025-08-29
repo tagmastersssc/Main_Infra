@@ -29,7 +29,7 @@ module "Back" {
         OpenAIBackend_MODEL                         = var.cognitive_deployment_model_name
         OpenAIBackend_DEPLOYMENT                    = module.OpenAI.azurerm_cognitive_deployment_model_name
         OpenAIBackend_VERSION                       = var.cognitive_deployment_model_api_version
-        }
+    }
 }
 
 module "Front" {
@@ -42,4 +42,7 @@ module "Front" {
     tags                                            = local.tags
     custom_domain_front                             = var.custom_domain_front
     serviceprincipalfrontclients_object_id          = var.serviceprincipalfrontclients_object_id
+    app_settings                                    = {
+        Backend_URL                                 = module.Back.azurerm_linux_web_app_hostname
+    }
 }

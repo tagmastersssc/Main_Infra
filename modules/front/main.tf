@@ -27,7 +27,8 @@ resource "azurerm_linux_web_app" "webappfront" {
       node_version = "22-lts"
     }
   }
-
+  
+  app_settings          = var.app_settings
   tags                  = var.tags
 }
 
