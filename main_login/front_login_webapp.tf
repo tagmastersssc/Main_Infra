@@ -1,25 +1,25 @@
 
-resource "azurerm_resource_group" "rgfront" {
+resource "azurerm_resource_group" "rgfrontlogin" {
   name     = "rg-${local.name_prefix}-front-${local.name_suffix}"
   location = local.location
   tags     = local.tags
 }
 
-resource "azurerm_service_plan" "aspfront" {
+resource "azurerm_service_plan" "aspfrontlogin" {
   name                = "asp-${local.name_prefix}-front-${local.name_suffix}"
-  resource_group_name = azurerm_resource_group.rgfront.name
-  location            = azurerm_resource_group.rgfront.location
+  resource_group_name = azurerm_resource_group.rgfrontlogin.name
+  location            = azurerm_resource_group.rgfrontlogin.location
   os_type             = "Linux"
   sku_name            = "F1"
   tags                = local.tags
 
 }
 
-resource "azurerm_linux_web_app" "webappfront" {
+resource "azurerm_linux_web_app" "webappfrontlogin" {
   name                = "webapp-${local.name_prefix}-front-${local.name_suffix}"
-  resource_group_name = azurerm_resource_group.rgfront.name
-  location            = azurerm_service_plan.aspfront.location
-  service_plan_id     = azurerm_service_plan.aspfront.id
+  resource_group_name = azurerm_resource_group.rgfrontlogin.name
+  location            = azurerm_service_plan.aspfrontlogin.location
+  service_plan_id     = azurerm_service_plan.aspfrontlogin.id
 
   site_config {
     always_on = false
