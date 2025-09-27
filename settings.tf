@@ -9,10 +9,10 @@ locals {
   name_suffix = "${local.environment}-${local.location}"
 
   tags = {
-    BU      = "${local.name_prefix}_${local.name_suffix}"
-    APP     = var.application
-    CLIENT  = var.client
-    ENV     = local.environment
+    BU     = var.business_unit
+    APP    = var.application
+    CLIENT = var.client
+    ENV    = local.environment
   }
 
 }   

@@ -11,8 +11,8 @@ module "Client1" {
   cognitive_deployment_model_api_version = "2024-12-01-preview"
   cognitive_deployment_sku_name          = "GlobalStandard"
   custom_domain_front                    = var.custom_domain_front
-  serviceprincipalbackclients_object_id  = azuread_service_principal.serviceprincipalbackclients.object_id
-  serviceprincipalfrontclients_object_id = azuread_service_principal.serviceprincipalfrontclients.object_id
+  serviceprincipalbackclients_object_id  = azuread_service_principal.serviceprincipalbackclientsrisk.object_id
+  serviceprincipalfrontclients_object_id = azuread_service_principal.serviceprincipalfrontclientsrisk.object_id
 }
 
 module "Client2" {
@@ -27,6 +27,17 @@ module "Client2" {
   cognitive_deployment_model_api_version = "2024-12-01-preview"
   cognitive_deployment_sku_name          = "GlobalStandard"
   custom_domain_front                    = var.custom_domain_front
-  serviceprincipalbackclients_object_id  = azuread_service_principal.serviceprincipalbackclients.object_id
-  serviceprincipalfrontclients_object_id = azuread_service_principal.serviceprincipalfrontclients.object_id
+  serviceprincipalbackclients_object_id  = azuread_service_principal.serviceprincipalbackclientsrisk.object_id
+  serviceprincipalfrontclients_object_id = azuread_service_principal.serviceprincipalfrontclientsrisk.object_id
+}
+
+module "Client3" {
+  source                                 = "./clients/invoice/Client"
+  application                            = "Invoice"
+  location                               = "eastus2"
+  business_unit                          = "Invoice"
+  client                                 = "Client3"
+  custom_domain_front                    = var.custom_domain_front
+  serviceprincipalbackclients_object_id  = azuread_service_principal.serviceprincipalbackclientsinvoice.object_id
+  serviceprincipalfrontclients_object_id = azuread_service_principal.serviceprincipalfrontclientsinvoice.object_id
 }
