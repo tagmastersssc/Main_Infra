@@ -43,6 +43,6 @@ module "Front" {
     custom_domain_front                             = var.custom_domain_front
     serviceprincipalfrontclients_object_id          = var.serviceprincipalfrontclients_object_id
     app_settings                                    = {
-        Backend_URL                                 = module.Back.azurerm_linux_web_app_hostname
+        Backend_URL                                 = module.Back.azurerm_function_hostname
     }
 }

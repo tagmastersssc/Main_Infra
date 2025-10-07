@@ -1,4 +1,4 @@
 
-output "azurerm_linux_web_app_hostname" {
-  value = azurerm_linux_web_app.webappback.default_hostname
+output "azurerm_function_hostname" {
+  value = azurerm_function_app_flex_consumption.functionback.default_hostname
 }

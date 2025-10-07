@@ -34,7 +34,7 @@ module "Client2" {
 module "Client3" {
   source                                 = "./clients/invoice/Client"
   application                            = "Invoice"
-  location                               = "eastus2"
+  location                               = "centralus"
   business_unit                          = "Invoice"
   client                                 = "Client3"
   custom_domain_front                    = var.custom_domain_front
