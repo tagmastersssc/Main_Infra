@@ -5,7 +5,7 @@ resource "azurerm_resource_group" "rgback" {
   tags                  = var.tags
 }
 
-resource "azurerm_storage_account" "backtorageaccount" {
+resource "azurerm_storage_account" "backstorageaccount" {
   name                     = "${lower(var.client)}${var.environment}"
   resource_group_name      = azurerm_resource_group.rgback.name
   location                 = azurerm_resource_group.rgback.location
@@ -15,9 +15,24 @@ resource "azurerm_storage_account" "backtorageaccount" {
   tags                      = var.tags
 }
 
+resource "azurerm_storage_account" "backstoragetableaccount" {
+  name                     = "${lower(var.client)}${var.environment}st"
+  resource_group_name      = azurerm_resource_group.rgback.name
+  location                 = azurerm_resource_group.rgback.location
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+
+  tags                      = var.tags
+}
+
+resource "azurerm_storage_table" "storagetable" {
+  name                 = "Documents"
+  storage_account_name = azurerm_storage_account.backstoragetableaccount.name
+}
+
 resource "azurerm_storage_container" "storagecontainer" {
   name                  = "${lower(var.client)}${var.environment}-flexcontainer"
-  storage_account_id    = azurerm_storage_account.backtorageaccount.id
+  storage_account_id    = azurerm_storage_account.backstorageaccount.id
   container_access_type = "private"
 }
 
@@ -37,11 +52,17 @@ resource "azurerm_function_app_flex_consumption" "functionback" {
   location                    = azurerm_resource_group.rgback.location
   service_plan_id             = azurerm_service_plan.aspback.id
   storage_container_type      = "blobContainer"
-  storage_container_endpoint  = "${azurerm_storage_account.backtorageaccount.primary_blob_endpoint}${azurerm_storage_container.storagecontainer.name}"
+  storage_container_endpoint  = "${azurerm_storage_account.backstorageaccount.primary_blob_endpoint}${azurerm_storage_container.storagecontainer.name}"
   storage_authentication_type = "StorageAccountConnectionString"
-  storage_access_key          = azurerm_storage_account.backtorageaccount.primary_access_key
+  storage_access_key          = azurerm_storage_account.backstorageaccount.primary_access_key
   runtime_version = "3.13"
   runtime_name = "python"
+
+  connection_string {
+    name = "StorageTable"
+    type = "Custom"
+    value = azurerm_storage_account.backstoragetableaccount.primary_connection_string
+  }
 
   site_config {
     scm_ip_restriction {
@@ -49,6 +70,12 @@ resource "azurerm_function_app_flex_consumption" "functionback" {
       action        = "Allow"
       service_tag   = "AzureCloud"
       name          = "AzureGitHub"
+    }
+    cors {
+      allowed_origins = [
+        "https://portal.azure.com",
+        "https://functions.azure.com",
+      ]
     }
   }
 
@@ -61,3 +88,4 @@ resource "azurerm_role_assignment" "roleassignmentbackclients" {
   role_definition_name  = "Contributor"
   principal_id          = var.serviceprincipalbackclients_object_id
 }
+

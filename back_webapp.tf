@@ -12,7 +12,7 @@ resource "azurerm_storage_account" "backtorageaccount" {
   account_tier             = "Standard"
   account_replication_type = "LRS"
 
-  tags                      = local.tags
+  tags = local.tags
 }
 
 resource "azurerm_storage_container" "storagecontainer" {
@@ -22,17 +22,17 @@ resource "azurerm_storage_container" "storagecontainer" {
 }
 
 resource "azurerm_service_plan" "aspback" {
-  name                  = "asp-${local.name_prefix}-back-${local.name_suffix}"
-  resource_group_name   = azurerm_resource_group.rgback.name
-  location              = azurerm_resource_group.rgback.location
-  os_type               = "Linux"
-  sku_name              = "FC1"
-  tags                  = local.tags
-  
+  name                = "asp-${local.name_prefix}-back-${local.name_suffix}"
+  resource_group_name = azurerm_resource_group.rgback.name
+  location            = azurerm_resource_group.rgback.location
+  os_type             = "Linux"
+  sku_name            = "FC1"
+  tags                = local.tags
+
 }
 
 resource "azurerm_function_app_flex_consumption" "functionback" {
-  name                       = "${local.name_prefix}-back-${local.name_suffix}"
+  name                        = "${local.name_prefix}-back-${local.name_suffix}"
   resource_group_name         = azurerm_resource_group.rgback.name
   location                    = azurerm_resource_group.rgback.location
   service_plan_id             = azurerm_service_plan.aspback.id
@@ -40,17 +40,17 @@ resource "azurerm_function_app_flex_consumption" "functionback" {
   storage_container_endpoint  = "${azurerm_storage_account.backtorageaccount.primary_blob_endpoint}${azurerm_storage_container.storagecontainer.name}"
   storage_authentication_type = "StorageAccountConnectionString"
   storage_access_key          = azurerm_storage_account.backtorageaccount.primary_access_key
-  runtime_version = "3.13"
-  runtime_name = "python"
+  runtime_version             = "3.13"
+  runtime_name                = "python"
 
   site_config {
     scm_ip_restriction {
-      priority      = "100"
-      action        = "Allow"
-      service_tag   = "AzureCloud"
-      name          = "AzureGitHub"
+      priority    = "100"
+      action      = "Allow"
+      service_tag = "AzureCloud"
+      name        = "AzureGitHub"
     }
   }
 
-  tags                  = local.tags
+  tags = local.tags
 }

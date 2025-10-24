@@ -20,6 +20,7 @@ module "Front" {
     environment                                     = local.environment
     client                                          = var.client
     tags                                            = local.tags
+    sku                                             = var.sku
     custom_domain_front                             = var.custom_domain_front
     serviceprincipalfrontclients_object_id          = var.serviceprincipalfrontclients_object_id
     app_settings                                    = {
