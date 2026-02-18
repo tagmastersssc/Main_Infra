@@ -13,6 +13,9 @@ resource "azurerm_static_web_app" "static_web_app" {
   sku_tier            = var.sku 
   app_settings        = var.app_settings
   tags                = var.tags
+  lifecycle {
+    ignore_changes = [ repository_branch, repository_url ]
+  }
 }
 
 resource "azurerm_role_assignment" "roleassignmentfrontclients" {

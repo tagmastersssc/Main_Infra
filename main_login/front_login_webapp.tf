@@ -1,3 +1,4 @@
+data "azuread_client_config" "current" {}
 
 resource "azurerm_resource_group" "rgfrontlogin" {
   name     = "rg-${local.name_prefix}-front-${local.name_suffix}"
@@ -20,7 +21,11 @@ resource "azurerm_linux_web_app" "webappfrontlogin" {
   resource_group_name = azurerm_resource_group.rgfrontlogin.name
   location            = azurerm_service_plan.aspfrontlogin.location
   service_plan_id     = azurerm_service_plan.aspfrontlogin.id
-
+  app_settings = {
+    REACT_APP_BACKEND_URL           = azurerm_linux_web_app.webappbacklogin.default_hostname
+    REACT_APP_CLIENT_ID             = azuread_application.applicationuserlogin.client_id
+    REACT_APP_TENANT_ID             = data.azuread_client_config.current.tenant_id
+  }
   site_config {
     always_on = false
     application_stack {

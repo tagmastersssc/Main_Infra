@@ -24,7 +24,7 @@ module "Front" {
     custom_domain_front                             = var.custom_domain_front
     serviceprincipalfrontclients_object_id          = var.serviceprincipalfrontclients_object_id
     app_settings                                    = {
-        Backend_URL                                 = module.Back.azurerm_function_hostname
+        REACT_APP_BACKEND_URL                       = module.Back.azurerm_function_hostname
     }
 }
 
