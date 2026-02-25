@@ -2,15 +2,19 @@
 resource "azuread_application" "applicationuserlogin" {
   display_name = "app-${local.name_prefix}-userlogin-${local.name_suffix}"
 
-  sign_in_audience = "AzureADMyOrg"
+  sign_in_audience = "AzureADandPersonalMicrosoftAccount"
 
-  single_page_application {
-    redirect_uris = ["https://${azurerm_linux_web_app.webappbacklogin.default_hostname}/auth/callback"]
+  web {
+    redirect_uris = ["https://${azurerm_linux_web_app.webappbacklogin.default_hostname}/auth/sso/callback","http://localhost:8000/auth/sso/callback"]
   }
 
   api {
     requested_access_token_version = 2
   }
+}
+
+resource "azuread_application_password" "applicationuserloginpassword" {
+  application_id = azuread_application.applicationuserlogin.id
 }
 
 resource "azuread_application_app_role" "approleclientadmin" {
@@ -20,6 +24,9 @@ resource "azuread_application_app_role" "approleclientadmin" {
   description          = "Administrador del cliente"
   display_name         = "Client Admin"
   value                = "client_admin"
+  lifecycle {
+    ignore_changes = [role_id]
+  }
 }
 
 resource "azuread_application_app_role" "approleclientuser" {
@@ -29,6 +36,9 @@ resource "azuread_application_app_role" "approleclientuser" {
   description          = "Usuario del cliente"
   display_name         = "Client User"
   value                = "client_user"
+  lifecycle {
+    ignore_changes = [role_id]
+  }
 }
 
 resource "azuread_application_app_role" "approleglobaladmin" {
@@ -38,4 +48,7 @@ resource "azuread_application_app_role" "approleglobaladmin" {
   description          = "Global Admin"
   display_name         = "Global Admin"
   value                = "global_admin"
+  lifecycle {
+    ignore_changes = [role_id]
+  }
 }

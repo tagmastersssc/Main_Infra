@@ -22,9 +22,10 @@ resource "azurerm_linux_web_app" "webappfrontlogin" {
   location            = azurerm_service_plan.aspfrontlogin.location
   service_plan_id     = azurerm_service_plan.aspfrontlogin.id
   app_settings = {
-    REACT_APP_BACKEND_URL           = azurerm_linux_web_app.webappbacklogin.default_hostname
-    REACT_APP_CLIENT_ID             = azuread_application.applicationuserlogin.client_id
-    REACT_APP_TENANT_ID             = data.azuread_client_config.current.tenant_id
+    VITE_APP_BACKEND_URL            = azurerm_linux_web_app.webappbacklogin.default_hostname
+    VITE_APP_CLIENT_ID              = azuread_application.applicationuserlogin.client_id
+    VITE_APP_TENANT_ID              = data.azuread_client_config.current.tenant_id
+    VITE_APP_PASSWORD               = azuread_application_password.applicationuserloginpassword.value
   }
   site_config {
     always_on = false
@@ -35,3 +36,46 @@ resource "azurerm_linux_web_app" "webappfrontlogin" {
   }
   tags = local.tags
 }
+
+resource "azurerm_key_vault" "keyvaultfrontlogin" {
+  name                = "kv-login-${local.name_suffix}"
+  location            = azurerm_resource_group.rgfrontlogin.location
+  resource_group_name = azurerm_resource_group.rgfrontlogin.name
+  tenant_id           = data.azuread_client_config.current.tenant_id
+  sku_name            = "standard"
+  tags                = local.tags
+}
+
+resource "azurerm_key_vault_access_policy" "accesspolicyfrontlogin" {
+  key_vault_id = azurerm_key_vault.keyvaultfrontlogin.id
+
+  tenant_id = data.azuread_client_config.current.tenant_id
+  object_id = data.azuread_client_config.current.object_id
+
+  secret_permissions = [
+    "Delete",
+    "Get",
+    "Set",
+  ]
+}
+
+resource "azurerm_key_vault_access_policy" "accesspolicyfrontlogingithub" {
+  key_vault_id = azurerm_key_vault.keyvaultfrontlogin.id
+
+  tenant_id = data.azuread_client_config.current.tenant_id
+  object_id = azuread_service_principal.serviceprincipalfrontlogin.object_id
+
+  secret_permissions = [
+    "Delete",
+    "Get",
+    "Set",
+  ]
+}
+
+resource "azurerm_key_vault_secret" "secretfrontlogin" {
+  name         = "VITE-APP-BACKEND-URL"
+  value        = azurerm_linux_web_app.webappbacklogin.default_hostname
+  key_vault_id = azurerm_key_vault.keyvaultfrontlogin.id
+  depends_on = [ azurerm_key_vault_access_policy.accesspolicyfrontlogin ]
+}
+
