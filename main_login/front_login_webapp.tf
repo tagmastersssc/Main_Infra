@@ -1,4 +1,3 @@
-data "azuread_client_config" "current" {}
 
 resource "azurerm_resource_group" "rgfrontlogin" {
   name     = "rg-${local.name_prefix}-front-${local.name_suffix}"
@@ -21,12 +20,7 @@ resource "azurerm_linux_web_app" "webappfrontlogin" {
   resource_group_name = azurerm_resource_group.rgfrontlogin.name
   location            = azurerm_service_plan.aspfrontlogin.location
   service_plan_id     = azurerm_service_plan.aspfrontlogin.id
-  app_settings = {
-    VITE_APP_BACKEND_URL            = azurerm_linux_web_app.webappbacklogin.default_hostname
-    VITE_APP_CLIENT_ID              = azuread_application.applicationuserlogin.client_id
-    VITE_APP_TENANT_ID              = data.azuread_client_config.current.tenant_id
-    VITE_APP_PASSWORD               = azuread_application_password.applicationuserloginpassword.value
-  }
+
   site_config {
     always_on = false
     application_stack {
@@ -56,6 +50,8 @@ resource "azurerm_key_vault_access_policy" "accesspolicyfrontlogin" {
     "Delete",
     "Get",
     "Set",
+    "List",
+    "Purge",
   ]
 }
 
@@ -66,15 +62,20 @@ resource "azurerm_key_vault_access_policy" "accesspolicyfrontlogingithub" {
   object_id = azuread_service_principal.serviceprincipalfrontlogin.object_id
 
   secret_permissions = [
-    "Delete",
     "Get",
-    "Set",
   ]
 }
 
-resource "azurerm_key_vault_secret" "secretfrontlogin" {
-  name         = "VITE-APP-BACKEND-URL"
-  value        = azurerm_linux_web_app.webappbacklogin.default_hostname
+resource "azurerm_key_vault_secret" "secretfrontloginbackendurl" {
+  name         = "VITE-API-URL"
+  value        = "https://${azurerm_linux_web_app.webappbacklogin.default_hostname}"
+  key_vault_id = azurerm_key_vault.keyvaultfrontlogin.id
+  depends_on = [ azurerm_key_vault_access_policy.accesspolicyfrontlogin ]
+}
+
+resource "azurerm_key_vault_secret" "secretfrontloginmainurl" {
+  name         = "VITE-WEBSITE-URL"
+  value        = "https://${var.main_front_url}"
   key_vault_id = azurerm_key_vault.keyvaultfrontlogin.id
   depends_on = [ azurerm_key_vault_access_policy.accesspolicyfrontlogin ]
 }
