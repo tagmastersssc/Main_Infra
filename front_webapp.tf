@@ -1,4 +1,6 @@
 
+data "azuread_client_config" "current" {}
+
 resource "azurerm_resource_group" "rgfront" {
   name     = "rg-${local.name_prefix}-front-${local.name_suffix}"
   location = local.location
@@ -29,4 +31,67 @@ resource "azurerm_linux_web_app" "webappfront" {
     app_command_line = "pm2 serve /home/site/wwwroot --no-daemon"
   }
   tags = local.tags
+}
+
+resource "azurerm_key_vault" "keyvaultfrontmain" {
+  name                = "kmain-${local.name_suffix}"
+  location            = azurerm_resource_group.rgfront.location
+  resource_group_name = azurerm_resource_group.rgfront.name
+  tenant_id           = data.azuread_client_config.current.tenant_id
+  sku_name            = "standard"
+  tags                = local.tags
+}
+
+resource "azurerm_key_vault_access_policy" "accesspolicyfrontmain" {
+  key_vault_id = azurerm_key_vault.keyvaultfrontmain.id
+
+  tenant_id = data.azuread_client_config.current.tenant_id
+  object_id = data.azuread_client_config.current.object_id
+
+  secret_permissions = [
+    "Delete",
+    "Get",
+    "Set",
+    "List",
+    "Purge",
+  ]
+}
+
+resource "azurerm_key_vault_access_policy" "accesspolicyfrontmaingithub" {
+  key_vault_id = azurerm_key_vault.keyvaultfrontmain.id
+
+  tenant_id = data.azuread_client_config.current.tenant_id
+  object_id = azuread_service_principal.serviceprincipalfront.object_id
+
+  secret_permissions = [
+    "Get",
+  ]
+}
+
+resource "azurerm_key_vault_secret" "secretfrontmainVITE_LOGIN_URL" {
+  name         = "VITE-LOGIN-URL"
+  value        = "https://${module.Main_Login.front_azurerm_linux_web_app_hostname}"
+  key_vault_id = azurerm_key_vault.keyvaultfrontmain.id
+  depends_on = [ azurerm_key_vault_access_policy.accesspolicyfrontmaingithub ]
+}
+
+resource "azurerm_key_vault_secret" "secretfrontmainVITE_WHATSAPP_URL" {
+  name         = "VITE-WHATSAPP-URL"
+  value        = "https://wa.me/573001112233?text=Hola BilAI%2C quiero conocer la plataforma"
+  key_vault_id = azurerm_key_vault.keyvaultfrontmain.id
+  depends_on = [ azurerm_key_vault_access_policy.accesspolicyfrontmaingithub ]
+}
+
+resource "azurerm_key_vault_secret" "secretfrontmainVITE_CONTACT_EMAIL" {
+  name         = "VITE-CONTACT-EMAIL"
+  value        = "ventas@bilai.com"
+  key_vault_id = azurerm_key_vault.keyvaultfrontmain.id
+  depends_on = [ azurerm_key_vault_access_policy.accesspolicyfrontmaingithub ]
+}
+
+resource "azurerm_key_vault_secret" "secretfrontmainVITE_GA_MEASUREMENT_ID" {
+  name         = "VITE-GA-MEASUREMENT-ID"
+  value        = "G-XXXXXXXXXX"
+  key_vault_id = azurerm_key_vault.keyvaultfrontmain.id
+  depends_on = [ azurerm_key_vault_access_policy.accesspolicyfrontmaingithub ]
 }

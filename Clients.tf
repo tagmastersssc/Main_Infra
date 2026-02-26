@@ -41,4 +41,5 @@ module "Client3" {
   custom_domain_front                    = var.custom_domain_front
   serviceprincipalbackclients_object_id  = azuread_service_principal.serviceprincipalbackclientsinvoice.object_id
   serviceprincipalfrontclients_object_id = azuread_service_principal.serviceprincipalfrontclientsinvoice.object_id
+  main_login_front_default_hostname      = module.Main_Login.front_azurerm_linux_web_app_hostname
 }

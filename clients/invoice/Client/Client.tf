@@ -26,6 +26,7 @@ module "Front" {
     app_settings                                    = {
         REACT_APP_BACKEND_URL                       = module.Back.azurerm_function_hostname
     }
+    main_login_front_default_hostname               = var.main_login_front_default_hostname
 }
 
 module "TableStorage" {

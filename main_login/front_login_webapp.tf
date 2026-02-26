@@ -32,7 +32,7 @@ resource "azurerm_linux_web_app" "webappfrontlogin" {
 }
 
 resource "azurerm_key_vault" "keyvaultfrontlogin" {
-  name                = "kv-login-${local.name_suffix}"
+  name                = "klogin-${local.name_suffix}"
   location            = azurerm_resource_group.rgfrontlogin.location
   resource_group_name = azurerm_resource_group.rgfrontlogin.name
   tenant_id           = data.azuread_client_config.current.tenant_id
@@ -80,3 +80,9 @@ resource "azurerm_key_vault_secret" "secretfrontloginmainurl" {
   depends_on = [ azurerm_key_vault_access_policy.accesspolicyfrontlogin ]
 }
 
+resource "azurerm_key_vault_secret" "secretfrontloginVITE_APP_TENANT_ID" {
+  name         = "VITE-APP-TENANT-ID"
+  value        = data.azuread_client_config.current.tenant_id
+  key_vault_id = azurerm_key_vault.keyvaultfrontlogin.id
+  depends_on = [ azurerm_key_vault_access_policy.accesspolicyfrontlogin ]
+}
