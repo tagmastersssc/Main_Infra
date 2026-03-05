@@ -27,4 +27,7 @@ resource "azurerm_cognitive_deployment" "cognitive_deployment" {
   sku {
     name = var.cognitive_deployment_sku_name
   }
+  lifecycle {
+    ignore_changes = [ rai_policy_name ]
+  }
 }
