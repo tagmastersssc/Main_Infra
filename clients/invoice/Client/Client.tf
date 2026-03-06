@@ -9,7 +9,7 @@ module "Back" {
     tags                                            = local.tags
     serviceprincipalbackclients_object_id           = var.serviceprincipalbackclients_object_id
     app_settings                                    = {
-        OPENAI_ENDPOINT                             = module.OpenAI.azurerm_ai_services_endpoint
+        OPENAI_ENDPOINT                             = "${module.OpenAI.azurerm_ai_services_endpoint}/openai/v1"
         OPENAI_KEY                                  = module.OpenAI.azurerm_ai_services_primary_access_key
         OPENAI_DEPLOYMENT_MODEL_NAME                = module.OpenAI.azurerm_cognitive_deployment_model_name
     }
