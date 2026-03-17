@@ -39,7 +39,7 @@ resource "azurerm_linux_web_app" "webappbacklogin" {
     LOGIN_FRONT_URL                 = "https://${azurerm_linux_web_app.webappfrontlogin.default_hostname}"
     CLIENTS_APP_URL                 = "https://${var.borrar}" #REVISAR!!!!!
     REQUIRE_ALLOWLIST               = "true"
-    ALLOWED_EMAILS                  = "santiagomejia.r02@gmail.com,smejiar@unbosque.edu.co" #REVISAR!!!!!
+    ALLOWED_EMAILS                  = "santiagomejia.r02@gmail.com,smejiar@unbosque.edu.co,gonzalez915@outlook.com" #REVISAR!!!!!
     SSO_STATE_TTL_SECONDS           = "900"
 
   }

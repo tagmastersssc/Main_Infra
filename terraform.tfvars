@@ -1,4 +1,5 @@
 subscription_id                   = "833533ea-dd85-4066-8971-5395fd687592"
+tenant_id                         = "7b128625-9864-4389-b07c-3e139e7559cd"
 business_unit                     = "main"
 application                       = "main"
 location                          = "eastus"

@@ -1,5 +1,6 @@
 
 variable "subscription_id" {}
+variable "tenant_id" {}
 variable "business_unit" {}
 variable "application" {}
 variable "location" {}
