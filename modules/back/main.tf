@@ -72,10 +72,7 @@ resource "azurerm_function_app_flex_consumption" "functionback" {
       name          = "AzureGitHub"
     }
     cors {
-      allowed_origins = [
-        "https://portal.azure.com",
-        "https://functions.azure.com",
-      ]
+      allowed_origins = var.cors_allowed_origins
     }
   }
 

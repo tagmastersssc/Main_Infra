@@ -34,30 +34,6 @@ resource "azurerm_key_vault" "keyvaultfrontclients" {
   sku_name                    = "standard"
   rbac_authorization_enabled  = true
   tags                        = var.tags
-  # access_policy {
-  #   tenant_id = data.azuread_client_config.current.tenant_id
-  #   object_id = data.azuread_client_config.current.object_id
-
-  #   secret_permissions = [
-  #     "Delete",
-  #     "Get",
-  #     "Set",
-  #     "List",
-  #     "Purge",
-  #   ]
-  # }
-  # access_policy {
-  #   tenant_id = data.azuread_client_config.current.tenant_id
-  #   object_id = var.serviceprincipalfrontclients_object_id
-
-  #   secret_permissions = [
-  #     "Delete",
-  #     "Get",
-  #     "Set",
-  #     "List",
-  #     "Purge",
-  #   ]
-  # }
 }
 
 resource "azurerm_role_assignment" "roleassignemntkeyvaultfrontclients" {
@@ -77,6 +53,13 @@ resource "azurerm_role_assignment" "roleassignemntkeyvaultfrontclientssp" {
 resource "azurerm_key_vault_secret" "secretfrontclientsVITE_LOGIN_APP_URL" {
   name         = "VITE-LOGIN-APP-URL"
   value        = "https://${var.main_login_front_default_hostname}"
+  key_vault_id = azurerm_key_vault.keyvaultfrontclients.id
+  depends_on = [ azurerm_role_assignment.roleassignemntkeyvaultfrontclientssp ]
+}
+
+resource "azurerm_key_vault_secret" "secretfrontclientsVITE_API_URL" {
+  name         = "VITE-API-URL"
+  value        = "https://${var.backend_api_url}"
   key_vault_id = azurerm_key_vault.keyvaultfrontclients.id
   depends_on = [ azurerm_role_assignment.roleassignemntkeyvaultfrontclientssp ]
 }

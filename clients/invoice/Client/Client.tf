@@ -13,6 +13,7 @@ module "Back" {
         OPENAI_KEY                                  = module.OpenAI.azurerm_ai_services_primary_access_key
         OPENAI_DEPLOYMENT_MODEL_NAME                = module.OpenAI.azurerm_cognitive_deployment_model_name
     }
+    cors_allowed_origins                             = ["*"] #["https://portal.azure.com","https://functions.azure.com","".....] cambiar cuando se tenga el dominio
 }
 
 module "Front" {
@@ -27,9 +28,10 @@ module "Front" {
     custom_domain_front                             = var.custom_domain_front
     serviceprincipalfrontclients_object_id          = var.serviceprincipalfrontclients_object_id
     app_settings                                    = {
-        REACT_APP_BACKEND_URL                       = module.Back.azurerm_function_hostname
+        # REACT_APP_BACKEND_URL                       = module.Back.azurerm_function_hostname
     }
     main_login_front_default_hostname               = var.main_login_front_default_hostname
+    backend_api_url                                 = module.Back.azurerm_function_hostname
 }
 
 module "TableStorage" {
