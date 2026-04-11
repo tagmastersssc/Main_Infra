@@ -11,5 +11,5 @@ output "tenant_id" {
 }
 
 output "front_url" {
-  value = var.custom_domain_front != "" ? "https://${var.custom_domain_front}" : "https://${module.Front.azurerm_static_web_app_hostname}"
+  value = "https://${module.Front.azurerm_static_web_app_hostname}"
 }
