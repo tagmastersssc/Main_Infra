@@ -72,7 +72,8 @@ resource "azurerm_function_app_flex_consumption" "functionback" {
       name        = "AzureGitHub"
     }
     cors {
-      allowed_origins = var.cors_allowed_origins
+      allowed_origins     = var.cors_allowed_origins
+      support_credentials = true
     }
   }
 
@@ -85,4 +86,3 @@ resource "azurerm_role_assignment" "roleassignmentbackclients" {
   role_definition_name = "Contributor"
   principal_id         = var.serviceprincipalbackclients_object_id
 }
-

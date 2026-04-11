@@ -62,7 +62,8 @@ resource "azurerm_linux_web_app" "webappbacklogin" {
   site_config {
     app_command_line = "gunicorn -w 2 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:8000 main:app"
     cors {
-      allowed_origins = ["https://${azurerm_linux_web_app.webappfrontlogin.default_hostname}", "https://${var.main_front_url}"]
+      allowed_origins     = ["https://${azurerm_linux_web_app.webappfrontlogin.default_hostname}", "https://${var.main_front_url}"]
+      support_credentials = true
     }
     always_on = false
     application_stack {
