@@ -94,10 +94,3 @@ resource "azurerm_key_vault_secret" "secretfrontloginmainurl" {
   key_vault_id = azurerm_key_vault.keyvaultfrontlogin.id
   depends_on = [ azurerm_role_assignment.roleassignemntkeyvaultfrontlogin_sp ]
 }
-
-resource "azurerm_key_vault_secret" "secretfrontlogin_VITE_APP_TENANT_ID" {
-  name         = "VITE-APP-TENANT-ID"
-  value        = data.azuread_client_config.current.tenant_id
-  key_vault_id = azurerm_key_vault.keyvaultfrontlogin.id
-  depends_on = [ azurerm_role_assignment.roleassignemntkeyvaultfrontlogin_sp ]
-}

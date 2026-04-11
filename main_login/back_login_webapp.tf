@@ -1,6 +1,11 @@
 
 data "azuread_client_config" "current" {}
 
+resource "random_password" "mainloginapptokensecret" {
+  length  = 64
+  special = false
+}
+
 resource "azurerm_resource_group" "rgbacklogin" {
   name     = "rg-${local.name_prefix}-back-${local.name_suffix}"
   location = var.location
@@ -32,21 +37,32 @@ resource "azurerm_linux_web_app" "webappbacklogin" {
     OIDC_CLIENT_SECRET              = azuread_application_password.applicationuserloginpassword.value
     OIDC_PUBLIC_CLIENT              = "false"
     OIDC_SCOPE                      = "openid profile email"
-    SSO_REDIRECT_URI                = "https://webapp-${local.name_prefix}-back-${local.name_suffix}.azurewebsites.net/auth/sso/callback" #REVISAR!!!!!
+    SSO_REDIRECT_URI                = "https://webapp-${local.name_prefix}-back-${local.name_suffix}.azurewebsites.net/auth/sso/callback"
     OIDC_PROVIDER_HINT_PARAM        = "idp"
-    APP_TOKEN_SECRET                = "local-dev-secret-change-before-production"
-    APP_TOKEN_TTL_SECONDS           = "288000" 
+    APP_TOKEN_SECRET                = random_password.mainloginapptokensecret.result
+    APP_TOKEN_TTL_SECONDS           = "28800"
+    SESSION_COOKIE_NAME             = "bilai_portal_session"
+    SESSION_COOKIE_DOMAIN           = ""
+    SESSION_COOKIE_PATH             = "/"
+    SESSION_COOKIE_SAMESITE         = "none"
+    SESSION_COOKIE_SECURE           = "true"
     LOGIN_FRONT_URL                 = "https://${azurerm_linux_web_app.webappfrontlogin.default_hostname}"
-    CLIENTS_APP_URL                 = "https://${var.borrar}" #REVISAR!!!!!
+    CLIENTS_APP_URL                 = ""
+    CLIENTS_BACKEND_URL             = ""
+    DEFAULT_TENANT_ID               = var.default_customer_tenant_id
+    TENANT_EXCHANGE_SECRET          = ""
+    TENANT_LOGIN_CODE_TTL_SECONDS   = "300"
+    TENANT_CONFIG_JSON              = var.tenant_registry_json
     REQUIRE_ALLOWLIST               = "true"
-    ALLOWED_EMAILS                  = "santiagomejia.r02@gmail.com,smejiar@unbosque.edu.co,gonzalez915@outlook.com" #REVISAR!!!!!
+    ALLOWED_EMAILS                  = ""
     SSO_STATE_TTL_SECONDS           = "900"
+    ALLOWED_ORIGINS                 = "https://${azurerm_linux_web_app.webappfrontlogin.default_hostname},https://${var.main_front_url}"
 
   }
   site_config {
     app_command_line  = "gunicorn -w 2 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:8000 main:app"
     cors {
-      allowed_origins = ["https://${azurerm_linux_web_app.webappfrontlogin.default_hostname}","https://${var.main_front_url}","https://${var.borrar}"]
+      allowed_origins = ["https://${azurerm_linux_web_app.webappfrontlogin.default_hostname}","https://${var.main_front_url}"]
     }
     always_on = false
     application_stack {
@@ -55,4 +71,3 @@ resource "azurerm_linux_web_app" "webappbacklogin" {
   }
   tags = local.tags
 }
-

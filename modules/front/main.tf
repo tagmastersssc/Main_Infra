@@ -13,7 +13,6 @@ resource "azurerm_static_web_app" "static_web_app" {
   location            = azurerm_resource_group.rgfront.location
   sku_size            = var.sku
   sku_tier            = var.sku 
-  app_settings        = var.app_settings
   tags                = var.tags
   lifecycle {
     ignore_changes = [ repository_branch, repository_url ]
@@ -59,7 +58,21 @@ resource "azurerm_key_vault_secret" "secretfrontclientsVITE_LOGIN_APP_URL" {
 
 resource "azurerm_key_vault_secret" "secretfrontclientsVITE_API_URL" {
   name         = "VITE-API-URL"
-  value        = "https://${var.backend_api_url}"
+  value        = var.backend_api_url
+  key_vault_id = azurerm_key_vault.keyvaultfrontclients.id
+  depends_on = [ azurerm_role_assignment.roleassignemntkeyvaultfrontclientssp ]
+}
+
+resource "azurerm_key_vault_secret" "secretfrontclientsVITE_RUNTIME_CONFIG_URL" {
+  name         = "VITE-RUNTIME-CONFIG-URL"
+  value        = var.runtime_config_url
+  key_vault_id = azurerm_key_vault.keyvaultfrontclients.id
+  depends_on = [ azurerm_role_assignment.roleassignemntkeyvaultfrontclientssp ]
+}
+
+resource "azurerm_key_vault_secret" "secretfrontclientsVITE_APP_TENANT_ID" {
+  name         = "VITE-APP-TENANT-ID"
+  value        = var.tenant_id
   key_vault_id = azurerm_key_vault.keyvaultfrontclients.id
   depends_on = [ azurerm_role_assignment.roleassignemntkeyvaultfrontclientssp ]
 }
