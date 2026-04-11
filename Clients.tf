@@ -2,9 +2,9 @@ locals {
   main_login_front_url = lower("https://webapp-main-login-front-${terraform.workspace}-eastus.azurewebsites.net")
   main_login_back_url  = lower("https://webapp-main-login-back-${terraform.workspace}-eastus.azurewebsites.net")
 
-  client3_tenant_id              = "client3"
-  client3_allowed_emails         = ["santiagomejia.r02@gmail.com", "smejiar@unbosque.edu.co", "gonzalez915@outlook.com"]
-  client3_allowed_email_domains  = []
+  client3_tenant_id             = "client3"
+  client3_allowed_emails        = ["santiagomejia.r02@gmail.com", "smejiar@unbosque.edu.co", "gonzalez915@outlook.com"]
+  client3_allowed_email_domains = []
 }
 
 resource "random_password" "client3_exchange_secret" {

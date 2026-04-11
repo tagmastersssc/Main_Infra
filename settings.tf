@@ -20,4 +20,4 @@ locals {
   client_runtime_config_url    = "https://${local.client_back_default_hostname}/api/runtime-config.js"
   tenant_id                    = var.tenant_id
 
-}   
+}

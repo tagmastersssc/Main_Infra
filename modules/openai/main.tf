@@ -2,9 +2,9 @@
 data "azurerm_client_config" "current" {}
 
 resource "azurerm_resource_group" "rgbackopenai" {
-  name      = "rg-${var.name_prefix}-backopenai-${var.name_suffix}-${var.client}"
-  location  = var.location
-  tags      = var.tags
+  name     = "rg-${var.name_prefix}-backopenai-${var.name_suffix}-${var.client}"
+  location = var.location
+  tags     = var.tags
 }
 
 resource "azurerm_ai_services" "ai_services" {
@@ -28,6 +28,6 @@ resource "azurerm_cognitive_deployment" "cognitive_deployment" {
     name = var.cognitive_deployment_sku_name
   }
   lifecycle {
-    ignore_changes = [ rai_policy_name ]
+    ignore_changes = [rai_policy_name]
   }
 }
