@@ -3,6 +3,7 @@ variable "business_unit" {}
 variable "application" {}
 variable "location" {}
 variable "client" {}
+variable "portal_domain" {}
 variable "sku" {}
 variable "serviceprincipalbackclients_object_id" {}
 variable "serviceprincipalfrontclients_object_id" {}

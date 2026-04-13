@@ -11,5 +11,9 @@ output "tenant_id" {
 }
 
 output "front_url" {
-  value = "https://${module.Front.azurerm_static_web_app_hostname}"
+  value = local.portal_domain != "" ? "https://${local.portal_domain}" : "https://${module.Front.azurerm_static_web_app_hostname}"
+}
+
+output "back_url" {
+  value = local.client_back_origin
 }
