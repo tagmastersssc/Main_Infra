@@ -12,7 +12,7 @@ resource "azurerm_service_plan" "aspfront" {
   resource_group_name = azurerm_resource_group.rgfront.name
   location            = azurerm_resource_group.rgfront.location
   os_type             = "Linux"
-  sku_name            = "F1"
+  sku_name            = local.main_public_domain != "" ? "B1" : "F1"
   tags                = local.tags
 
 }
@@ -31,6 +31,25 @@ resource "azurerm_linux_web_app" "webappfront" {
     app_command_line = "pm2 serve /home/site/wwwroot --no-daemon"
   }
   tags = local.tags
+}
+
+resource "azurerm_app_service_custom_hostname_binding" "webappfront_custom_hostname" {
+  count               = local.main_public_domain != "" ? 1 : 0
+  resource_group_name = azurerm_resource_group.rgfront.name
+  app_service_name    = azurerm_linux_web_app.webappfront.name
+  hostname            = local.main_public_domain
+}
+
+resource "azurerm_app_service_managed_certificate" "webappfront_managed_certificate" {
+  count                      = local.main_public_domain != "" ? 1 : 0
+  custom_hostname_binding_id = azurerm_app_service_custom_hostname_binding.webappfront_custom_hostname[0].id
+}
+
+resource "azurerm_app_service_certificate_binding" "webappfront_certificate_binding" {
+  count               = local.main_public_domain != "" ? 1 : 0
+  hostname_binding_id = azurerm_app_service_custom_hostname_binding.webappfront_custom_hostname[0].id
+  certificate_id      = azurerm_app_service_managed_certificate.webappfront_managed_certificate[0].id
+  ssl_state           = "SniEnabled"
 }
 
 resource "azurerm_key_vault" "keyvaultfrontmain" {
@@ -84,7 +103,7 @@ resource "azurerm_role_assignment" "roleassignemntkeyvaultfrontmain_sp" {
 
 resource "azurerm_key_vault_secret" "secretfrontmainVITE_LOGIN_URL" {
   name         = "VITE-LOGIN-URL"
-  value        = "https://${module.Main_Login.front_azurerm_linux_web_app_hostname}"
+  value        = "https://${local.main_login_front_domain}"
   key_vault_id = azurerm_key_vault.keyvaultfrontmain.id
   depends_on   = [azurerm_role_assignment.roleassignemntkeyvaultfrontmain_sp]
 }

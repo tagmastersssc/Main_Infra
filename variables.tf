@@ -8,6 +8,7 @@ variable "github_back_repo" {}
 variable "github_front_repo" {}
 variable "staticapp_github_front_repo" {}
 variable "client" {}
+variable "main_public_domain" {}
 variable "clients_invoice_domain" {}
 variable "clients_risk_github_back_repo" {}
 variable "clients_risk_github_front_repo" {}

@@ -19,6 +19,13 @@ resource "azurerm_static_web_app" "static_web_app" {
   }
 }
 
+resource "azurerm_static_web_app_custom_domain" "custom_domain" {
+  count             = trimspace(var.custom_domain) != "" ? 1 : 0
+  static_web_app_id = azurerm_static_web_app.static_web_app.id
+  domain_name       = trimspace(var.custom_domain)
+  validation_type   = "cname-delegation"
+}
+
 resource "azurerm_role_assignment" "roleassignmentfrontclients" {
   scope                = azurerm_resource_group.rgfront.id
   role_definition_name = "Contributor"

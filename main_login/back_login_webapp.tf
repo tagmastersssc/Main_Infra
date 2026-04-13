@@ -17,7 +17,7 @@ resource "azurerm_service_plan" "aspbacklogin" {
   resource_group_name = azurerm_resource_group.rgbacklogin.name
   location            = azurerm_resource_group.rgbacklogin.location
   os_type             = "Linux"
-  sku_name            = "F1"
+  sku_name            = local.login_back_sku_name
   tags                = local.tags
 
 }
@@ -37,7 +37,7 @@ resource "azurerm_linux_web_app" "webappbacklogin" {
     OIDC_CLIENT_SECRET            = azuread_application_password.applicationuserloginpassword.value
     OIDC_PUBLIC_CLIENT            = "false"
     OIDC_SCOPE                    = "openid profile email"
-    SSO_REDIRECT_URI              = "https://webapp-${local.name_prefix}-back-${local.name_suffix}.azurewebsites.net/auth/sso/callback"
+    SSO_REDIRECT_URI              = "https://${local.login_back_hostname}/auth/sso/callback"
     OIDC_PROVIDER_HINT_PARAM      = "idp"
     APP_TOKEN_SECRET              = random_password.mainloginapptokensecret.result
     APP_TOKEN_TTL_SECONDS         = "28800"
@@ -46,7 +46,7 @@ resource "azurerm_linux_web_app" "webappbacklogin" {
     SESSION_COOKIE_PATH           = "/"
     SESSION_COOKIE_SAMESITE       = "none"
     SESSION_COOKIE_SECURE         = "true"
-    LOGIN_FRONT_URL               = "https://${azurerm_linux_web_app.webappfrontlogin.default_hostname}"
+    LOGIN_FRONT_URL               = "https://${local.login_front_hostname}"
     CLIENTS_APP_URL               = ""
     CLIENTS_BACKEND_URL           = ""
     DEFAULT_TENANT_ID             = var.default_customer_tenant_id
@@ -56,13 +56,13 @@ resource "azurerm_linux_web_app" "webappbacklogin" {
     REQUIRE_ALLOWLIST             = "true"
     ALLOWED_EMAILS                = ""
     SSO_STATE_TTL_SECONDS         = "900"
-    ALLOWED_ORIGINS               = "https://${azurerm_linux_web_app.webappfrontlogin.default_hostname},https://${var.main_front_url}"
+    ALLOWED_ORIGINS               = "https://${local.login_front_hostname},https://${var.main_front_url}"
 
   }
   site_config {
     app_command_line = "gunicorn -w 2 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:8000 main:app"
     cors {
-      allowed_origins     = ["https://${azurerm_linux_web_app.webappfrontlogin.default_hostname}", "https://${var.main_front_url}"]
+      allowed_origins     = ["https://${local.login_front_hostname}", "https://${var.main_front_url}"]
       support_credentials = true
     }
     always_on = false
@@ -71,4 +71,23 @@ resource "azurerm_linux_web_app" "webappbacklogin" {
     }
   }
   tags = local.tags
+}
+
+resource "azurerm_app_service_custom_hostname_binding" "webappbacklogin_custom_hostname" {
+  count               = trimspace(var.back_custom_domain) != "" ? 1 : 0
+  resource_group_name = azurerm_resource_group.rgbacklogin.name
+  app_service_name    = azurerm_linux_web_app.webappbacklogin.name
+  hostname            = trimspace(var.back_custom_domain)
+}
+
+resource "azurerm_app_service_managed_certificate" "webappbacklogin_managed_certificate" {
+  count                      = trimspace(var.back_custom_domain) != "" ? 1 : 0
+  custom_hostname_binding_id = azurerm_app_service_custom_hostname_binding.webappbacklogin_custom_hostname[0].id
+}
+
+resource "azurerm_app_service_certificate_binding" "webappbacklogin_certificate_binding" {
+  count               = trimspace(var.back_custom_domain) != "" ? 1 : 0
+  hostname_binding_id = azurerm_app_service_custom_hostname_binding.webappbacklogin_custom_hostname[0].id
+  certificate_id      = azurerm_app_service_managed_certificate.webappbacklogin_managed_certificate[0].id
+  ssl_state           = "SniEnabled"
 }

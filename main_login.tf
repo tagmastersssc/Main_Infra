@@ -7,7 +7,9 @@ module "Main_Login" {
   client                       = var.client
   github_main_back_login_repo  = var.github_main_back_login_repo
   github_main_front_login_repo = var.github_main_front_login_repo
-  main_front_url               = azurerm_linux_web_app.webappfront.default_hostname
+  main_front_url               = local.main_public_hostname
+  front_custom_domain          = local.main_public_domain != "" ? local.main_login_front_domain : ""
+  back_custom_domain           = local.main_public_domain != "" ? local.main_login_back_domain : ""
   default_customer_tenant_id   = ""
   tenant_registry_json = jsonencode({
     (module.Client3.tenant_id) = {

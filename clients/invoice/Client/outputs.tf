@@ -6,6 +6,10 @@ output "back_azurerm_function_hostname" {
   value = module.Back.azurerm_function_hostname
 }
 
+output "back_custom_domain_verification_id" {
+  value = module.Back.azurerm_function_custom_domain_verification_id
+}
+
 output "tenant_id" {
   value = local.tenant_id
 }
