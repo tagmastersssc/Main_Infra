@@ -1,4 +1,14 @@
 
+resource "random_password" "client_exchange_secret" {
+  length  = 48
+  special = false
+}
+
+resource "random_password" "client_session_secret" {
+  length  = 64
+  special = false
+}
+
 module "Back" {
   source                                = "../../../modules/back/"
   name_prefix                           = local.name_prefix
@@ -14,9 +24,9 @@ module "Back" {
     OPENAI_DEPLOYMENT_MODEL_NAME = module.OpenAI.azurerm_cognitive_deployment_model_name
     MAIN_LOGIN_BACK_URL          = var.main_login_back_url
     BILAI_TENANT_ID              = local.tenant_id
-    BILAI_TENANT_EXCHANGE_SECRET = var.tenant_exchange_secret
+    BILAI_TENANT_EXCHANGE_SECRET = random_password.client_exchange_secret.result
     CLIENTS_FRONT_URL            = "https://${module.Front.azurerm_static_web_app_hostname}"
-    CLIENTS_SESSION_SECRET       = var.client_session_secret
+    CLIENTS_SESSION_SECRET       = random_password.client_session_secret.result
     CLIENTS_SESSION_TTL_SECONDS  = "28800"
     SESSION_COOKIE_NAME          = "bilai_client_session"
     SESSION_COOKIE_DOMAIN        = ""

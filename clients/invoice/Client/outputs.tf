@@ -13,3 +13,7 @@ output "tenant_id" {
 output "front_url" {
   value = "https://${module.Front.azurerm_static_web_app_hostname}"
 }
+
+output "client_exchange_secret" {
+  value = random_password.client_exchange_secret.result
+}

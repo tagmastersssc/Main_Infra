@@ -18,6 +18,6 @@ locals {
   client_back_default_hostname = lower("${var.client}-back-${local.name_suffix}.azurewebsites.net")
   client_back_api_url          = "https://${local.client_back_default_hostname}/api"
   client_runtime_config_url    = "https://${local.client_back_default_hostname}/api/runtime-config.js"
-  tenant_id                    = var.tenant_id
+  tenant_id                    = var.client
 
 }
