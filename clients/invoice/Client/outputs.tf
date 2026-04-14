@@ -11,7 +11,7 @@ output "tenant_id" {
 }
 
 output "front_url" {
-  value = "https://${module.Front.azurerm_static_web_app_hostname}"
+  value = "https://${var.client}.${local.environment}.${var.main_domain_name}"
 }
 
 output "client_exchange_secret" {
