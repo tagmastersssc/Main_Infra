@@ -24,7 +24,6 @@ module "Client3" {
   business_unit                          = "Invoice"
   client                                 = "Client3"
   sku                                    = "Free"
-  portal_domain                          = var.clients_invoice_domain
   serviceprincipalbackclients_object_id  = azuread_service_principal.serviceprincipalbackclientsinvoice.object_id
   serviceprincipalfrontclients_object_id = azuread_service_principal.serviceprincipalfrontclientsinvoice.object_id
   main_login_front_url                   = local.main_login_front_url

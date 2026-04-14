@@ -12,7 +12,7 @@ module "Main_Login" {
   tenant_registry_json = jsonencode({
     (module.Client3.tenant_id) = {
       clients_front_url     = module.Client3.front_url
-      clients_backend_url   = module.Client3.back_url
+      clients_backend_url   = "https://${module.Client3.back_azurerm_function_hostname}"
       exchange_secret       = random_password.client3_exchange_secret.result
       allowed_emails        = local.client3_allowed_emails
       allowed_email_domains = local.client3_allowed_email_domains

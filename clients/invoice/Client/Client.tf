@@ -15,7 +15,7 @@ module "Back" {
     MAIN_LOGIN_BACK_URL          = var.main_login_back_url
     BILAI_TENANT_ID              = local.tenant_id
     BILAI_TENANT_EXCHANGE_SECRET = var.tenant_exchange_secret
-    CLIENTS_FRONT_URL            = local.portal_domain != "" ? "https://${local.portal_domain}" : "https://${module.Front.azurerm_static_web_app_hostname}"
+    CLIENTS_FRONT_URL            = "https://${module.Front.azurerm_static_web_app_hostname}"
     CLIENTS_SESSION_SECRET       = var.client_session_secret
     CLIENTS_SESSION_TTL_SECONDS  = "28800"
     SESSION_COOKIE_NAME          = "bilai_client_session"
@@ -26,14 +26,14 @@ module "Back" {
     VITE_LOGIN_APP_URL           = var.main_login_front_url
     VITE_API_URL                 = "/api"
     VITE_APP_TENANT_ID           = local.tenant_id
-    ALLOWED_ORIGINS              = local.portal_domain != "" ? "https://${local.portal_domain}" : "https://${module.Front.azurerm_static_web_app_hostname}"
+    ALLOWED_ORIGINS              = "https://${module.Front.azurerm_static_web_app_hostname}"
     RAW_API_BASE_URL             = ""
     RAW_API_KEY                  = ""
     RAW_API_KEY_IN_HEADER        = "false"
     RAW_API_KEY_HEADER_NAME      = "x-functions-key"
     RAW_API_TIMEOUT_SECONDS      = "15"
   }
-  cors_allowed_origins = [local.portal_domain != "" ? "https://${local.portal_domain}" : "https://${module.Front.azurerm_static_web_app_hostname}"]
+  cors_allowed_origins = ["https://${module.Front.azurerm_static_web_app_hostname}"]
 }
 
 module "Front" {
