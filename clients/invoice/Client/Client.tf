@@ -60,6 +60,7 @@ module "Front" {
   backend_api_url                        = local.client_back_api_url
   runtime_config_url                     = local.client_runtime_config_url
   tenant_id                              = local.tenant_id
+  main_domain_name                       = var.main_domain_name
 }
 
 module "TableStorage" {

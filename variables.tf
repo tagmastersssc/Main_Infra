@@ -3,6 +3,7 @@ variable "subscription_id" {}
 variable "tenant_id" {}
 variable "business_unit" {}
 variable "application" {}
+variable "login_application" {}
 variable "location" {}
 variable "github_back_repo" {}
 variable "github_front_repo" {}
@@ -14,3 +15,6 @@ variable "clients_invoice_github_back_repo" {}
 variable "clients_invoice_github_front_repo" {}
 variable "github_main_back_login_repo" {}
 variable "github_main_front_login_repo" {}
+variable "static_web_app_sku" {}
+variable "main_static_web_app_location" {}
+variable "main_domain_name" {}

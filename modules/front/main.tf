@@ -19,6 +19,12 @@ resource "azurerm_static_web_app" "static_web_app" {
   }
 }
 
+resource "azurerm_static_web_app_custom_domain" "custom_domain" {
+  static_web_app_id = azurerm_static_web_app.static_web_app.id
+  domain_name       = "${var.client}.${var.environment}.${var.main_domain_name}"
+  validation_type   = "cname-delegation"
+}
+
 resource "azurerm_role_assignment" "roleassignmentfrontclients" {
   scope                = azurerm_resource_group.rgfront.id
   role_definition_name = "Contributor"

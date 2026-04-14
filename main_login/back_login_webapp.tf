@@ -46,7 +46,7 @@ resource "azurerm_linux_web_app" "webappbacklogin" {
     SESSION_COOKIE_PATH           = "/"
     SESSION_COOKIE_SAMESITE       = "none"
     SESSION_COOKIE_SECURE         = "true"
-    LOGIN_FRONT_URL               = "https://${azurerm_linux_web_app.webappfrontlogin.default_hostname}"
+    LOGIN_FRONT_URL               = "https://${var.application}.${local.environment}.${var.main_domain_name}"
     CLIENTS_APP_URL               = ""
     CLIENTS_BACKEND_URL           = ""
     DEFAULT_TENANT_ID             = var.default_customer_tenant_id
@@ -56,13 +56,13 @@ resource "azurerm_linux_web_app" "webappbacklogin" {
     REQUIRE_ALLOWLIST             = "true"
     ALLOWED_EMAILS                = ""
     SSO_STATE_TTL_SECONDS         = "900"
-    ALLOWED_ORIGINS               = "https://${azurerm_linux_web_app.webappfrontlogin.default_hostname},https://${var.main_front_url}"
+    ALLOWED_ORIGINS               = "https://${var.application}.${local.environment}.${var.main_domain_name},https://${var.main_front_url}"
 
   }
   site_config {
     app_command_line = "gunicorn -w 2 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:8000 main:app"
     cors {
-      allowed_origins     = ["https://${azurerm_linux_web_app.webappfrontlogin.default_hostname}", "https://${var.main_front_url}"]
+      allowed_origins     = ["https://${var.application}.${local.environment}.${var.main_domain_name}", "https://${var.main_front_url}"]
       support_credentials = true
     }
     always_on = false

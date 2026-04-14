@@ -1,12 +1,9 @@
 locals {
 
-  environment   = terraform.workspace
-  business_unit = var.business_unit
-  application   = var.application
-  location      = var.location
+  environment = terraform.workspace
 
-  name_prefix = "${local.business_unit}-${local.application}"
-  name_suffix = "${local.environment}-${local.location}"
+  name_prefix = "${var.business_unit}-${var.application}"
+  name_suffix = "${local.environment}-${var.location}"
 
   tags = {
     BU     = var.business_unit
