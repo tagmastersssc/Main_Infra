@@ -18,7 +18,7 @@ resource "azuread_application" "applicationuserlogin" {
 resource "azuread_application_redirect_uris" "applicationuserloginredirecturis" {
   application_id = azuread_application.applicationuserlogin.id
   type           = "Web"
-  redirect_uris  = ["https://${local.login_back_hostname}/auth/sso/callback", "http://localhost:8000/auth/sso/callback"]
+  redirect_uris  = ["https://${azurerm_linux_web_app.webappbacklogin.default_hostname}/auth/sso/callback", "http://localhost:8000/auth/sso/callback"]
 
 }
 

@@ -34,7 +34,6 @@ module "Back" {
     RAW_API_TIMEOUT_SECONDS      = "15"
   }
   cors_allowed_origins = [local.portal_domain != "" ? "https://${local.portal_domain}" : "https://${module.Front.azurerm_static_web_app_hostname}"]
-  custom_hostname      = local.portal_domain != "" ? local.client_back_hostname : ""
 }
 
 module "Front" {
@@ -51,7 +50,6 @@ module "Front" {
   backend_api_url                        = local.client_back_api_url
   runtime_config_url                     = local.client_runtime_config_url
   tenant_id                              = local.tenant_id
-  custom_domain                          = local.portal_domain
 }
 
 module "TableStorage" {

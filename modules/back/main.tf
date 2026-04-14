@@ -81,25 +81,6 @@ resource "azurerm_function_app_flex_consumption" "functionback" {
   tags         = var.tags
 }
 
-resource "azurerm_app_service_custom_hostname_binding" "custom_hostname" {
-  count               = trimspace(var.custom_hostname) != "" ? 1 : 0
-  resource_group_name = azurerm_resource_group.rgback.name
-  app_service_name    = azurerm_function_app_flex_consumption.functionback.name
-  hostname            = trimspace(var.custom_hostname)
-}
-
-resource "azurerm_app_service_managed_certificate" "managed_certificate" {
-  count                      = trimspace(var.custom_hostname) != "" ? 1 : 0
-  custom_hostname_binding_id = azurerm_app_service_custom_hostname_binding.custom_hostname[0].id
-}
-
-resource "azurerm_app_service_certificate_binding" "certificate_binding" {
-  count               = trimspace(var.custom_hostname) != "" ? 1 : 0
-  hostname_binding_id = azurerm_app_service_custom_hostname_binding.custom_hostname[0].id
-  certificate_id      = azurerm_app_service_managed_certificate.managed_certificate[0].id
-  ssl_state           = "SniEnabled"
-}
-
 resource "azurerm_role_assignment" "roleassignmentbackclients" {
   scope                = azurerm_resource_group.rgback.id
   role_definition_name = "Contributor"

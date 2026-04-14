@@ -10,4 +10,3 @@ variable "main_login_front_default_hostname" {}
 variable "backend_api_url" {}
 variable "runtime_config_url" {}
 variable "tenant_id" {}
-variable "custom_domain" {}
