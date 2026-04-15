@@ -51,7 +51,7 @@ resource "azurerm_role_assignment" "roleassignemntkeyvaultfrontlogin_sp" {
 
 resource "azurerm_key_vault_secret" "secretfrontloginbackendurl" {
   name         = "VITE-API-URL"
-  value        = "https://${azurerm_linux_web_app.webappbacklogin.default_hostname}"
+  value        = "https://back.${var.application}.${local.environment}.${var.main_domain_name}"
   key_vault_id = azurerm_key_vault.keyvaultfrontlogin.id
   depends_on   = [azurerm_role_assignment.roleassignemntkeyvaultfrontlogin_sp]
 }

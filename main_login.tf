@@ -7,7 +7,7 @@ module "Main_Login" {
   client                       = var.client
   github_main_back_login_repo  = var.github_main_back_login_repo
   github_main_front_login_repo = var.github_main_front_login_repo
-  main_front_url               = azurerm_static_web_app.static_web_app.default_host_name
+  main_front_url               = "https://${var.application}.${local.environment}.${var.main_domain_name}"
   static_web_app_sku           = "Free"
   static_web_app_location      = "eastus2"
   main_domain_name             = var.main_domain_name

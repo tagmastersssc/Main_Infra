@@ -12,21 +12,43 @@ resource "azurerm_resource_group" "rgbacklogin" {
   tags     = local.tags
 }
 
+resource "azurerm_storage_account" "backstorageaccount" {
+  name                     = "log${lower(var.client)}${local.environment}"
+  resource_group_name      = azurerm_resource_group.rgbacklogin.name
+  location                 = azurerm_resource_group.rgbacklogin.location
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+
+  tags = local.tags
+}
+
+resource "azurerm_storage_container" "storagecontainer" {
+  name                  = "${lower(var.client)}${local.environment}-flexcontainer"
+  storage_account_id    = azurerm_storage_account.backstorageaccount.id
+  container_access_type = "private"
+}
+
 resource "azurerm_service_plan" "aspbacklogin" {
   name                = "asp-${local.name_prefix}-back-${local.name_suffix}"
   resource_group_name = azurerm_resource_group.rgbacklogin.name
   location            = azurerm_resource_group.rgbacklogin.location
   os_type             = "Linux"
-  sku_name            = "F1"
+  sku_name            = "FC1"
   tags                = local.tags
 
 }
 
-resource "azurerm_linux_web_app" "webappbacklogin" {
-  name                = "webapp-${local.name_prefix}-back-${local.name_suffix}"
+resource "azurerm_function_app_flex_consumption" "webappbacklogin" {
+  name                = "${local.name_prefix}-back-${local.name_suffix}"
   resource_group_name = azurerm_resource_group.rgbacklogin.name
   location            = azurerm_service_plan.aspbacklogin.location
   service_plan_id     = azurerm_service_plan.aspbacklogin.id
+  storage_container_type      = "blobContainer"
+  storage_container_endpoint  = "${azurerm_storage_account.backstorageaccount.primary_blob_endpoint}${azurerm_storage_container.storagecontainer.name}"
+  storage_authentication_type = "StorageAccountConnectionString"
+  storage_access_key          = azurerm_storage_account.backstorageaccount.primary_access_key
+  runtime_version             = "3.13"
+  runtime_name                = "python"
   app_settings = {
     SCM_DO_BUILD_DURING_DEPLOYMENT = "1"
 
@@ -37,7 +59,7 @@ resource "azurerm_linux_web_app" "webappbacklogin" {
     OIDC_CLIENT_SECRET            = azuread_application_password.applicationuserloginpassword.value
     OIDC_PUBLIC_CLIENT            = "false"
     OIDC_SCOPE                    = "openid profile email"
-    SSO_REDIRECT_URI              = "https://webapp-${local.name_prefix}-back-${local.name_suffix}.azurewebsites.net/auth/sso/callback"
+    SSO_REDIRECT_URI              = "https://back.${var.application}.${local.environment}.${var.main_domain_name}/auth/sso/callback"
     OIDC_PROVIDER_HINT_PARAM      = "idp"
     APP_TOKEN_SECRET              = random_password.mainloginapptokensecret.result
     APP_TOKEN_TTL_SECONDS         = "28800"
@@ -60,15 +82,22 @@ resource "azurerm_linux_web_app" "webappbacklogin" {
 
   }
   site_config {
-    app_command_line = "gunicorn -w 2 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:8000 main:app"
+    scm_ip_restriction {
+      priority    = "100"
+      action      = "Allow"
+      service_tag = "AzureCloud"
+      name        = "AzureGitHub"
+    }
     cors {
       allowed_origins     = ["https://${var.application}.${local.environment}.${var.main_domain_name}", "https://${var.main_front_url}"]
       support_credentials = true
     }
-    always_on = false
-    application_stack {
-      python_version = "3.13"
-    }
   }
   tags = local.tags
+}
+
+resource "azurerm_app_service_custom_hostname_binding" "custom_hostname" {
+  hostname            = "back.${var.application}.${local.environment}.${var.main_domain_name}"
+  app_service_name    = azurerm_function_app_flex_consumption.webappbacklogin.name
+  resource_group_name = azurerm_resource_group.rgbacklogin.name
 }
