@@ -54,3 +54,9 @@ resource "azurerm_function_app_flex_consumption" "functionback" {
 
   tags = local.tags
 }
+
+resource "azurerm_app_service_custom_hostname_binding" "custom_hostname" {
+  hostname            = "back.${local.environment}.${var.main_domain_name}"
+  app_service_name    = azurerm_function_app_flex_consumption.functionback.name
+  resource_group_name = azurerm_resource_group.rgback.name
+}

@@ -18,6 +18,7 @@ module "Back" {
   client                                = var.client
   tags                                  = local.tags
   serviceprincipalbackclients_object_id = var.serviceprincipalbackclients_object_id
+  main_domain_name                       = var.main_domain_name
   app_settings = {
     OPENAI_ENDPOINT              = "${module.OpenAI.azurerm_ai_services_endpoint}/openai/v1"
     OPENAI_KEY                   = module.OpenAI.azurerm_ai_services_primary_access_key

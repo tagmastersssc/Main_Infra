@@ -50,8 +50,6 @@ resource "azurerm_function_app_flex_consumption" "webappbacklogin" {
   runtime_version             = "3.13"
   runtime_name                = "python"
   app_settings = {
-    SCM_DO_BUILD_DURING_DEPLOYMENT = "1"
-
     ENABLE_PASSWORD_AUTH          = "false",
     OIDC_TENANT_ID                = data.azuread_client_config.current.tenant_id
     OIDC_DISCOVERY_URL            = "https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration"
