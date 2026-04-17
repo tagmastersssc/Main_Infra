@@ -57,7 +57,8 @@ resource "azurerm_function_app_flex_consumption" "webappbacklogin" {
     OIDC_CLIENT_SECRET            = azuread_application_password.applicationuserloginpassword.value
     OIDC_PUBLIC_CLIENT            = "false"
     OIDC_SCOPE                    = "openid profile email"
-    SSO_REDIRECT_URI              = "https://back.${var.application}.${local.environment}.${var.main_domain_name}/auth/sso/callback"
+    # SSO_REDIRECT_URI              = "https://back.${var.application}.${local.environment}.${var.main_domain_name}/auth/sso/callback"
+    SSO_REDIRECT_URI              = "https://${local.name_prefix}-back-${local.name_suffix}.azurewebsites.net/auth/sso/callback"
     OIDC_PROVIDER_HINT_PARAM      = "idp"
     APP_TOKEN_SECRET              = random_password.mainloginapptokensecret.result
     APP_TOKEN_TTL_SECONDS         = "28800"
@@ -94,8 +95,8 @@ resource "azurerm_function_app_flex_consumption" "webappbacklogin" {
   tags = local.tags
 }
 
-resource "azurerm_app_service_custom_hostname_binding" "custom_hostname" {
-  hostname            = "back.${var.application}.${local.environment}.${var.main_domain_name}"
-  app_service_name    = azurerm_function_app_flex_consumption.webappbacklogin.name
-  resource_group_name = azurerm_resource_group.rgbacklogin.name
-}
+# resource "azurerm_app_service_custom_hostname_binding" "custom_hostname" {
+#   hostname            = "back.${var.application}.${local.environment}.${var.main_domain_name}"
+#   app_service_name    = azurerm_function_app_flex_consumption.webappbacklogin.name
+#   resource_group_name = azurerm_resource_group.rgbacklogin.name
+# }

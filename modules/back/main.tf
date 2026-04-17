@@ -81,11 +81,11 @@ resource "azurerm_function_app_flex_consumption" "functionback" {
   tags         = var.tags
 }
 
-resource "azurerm_app_service_custom_hostname_binding" "custom_hostname" {
-  hostname            = "back.${var.client}.${var.environment}.${var.main_domain_name}"
-  app_service_name    = azurerm_function_app_flex_consumption.functionback.name
-  resource_group_name = azurerm_resource_group.rgback.name
-}
+# resource "azurerm_app_service_custom_hostname_binding" "custom_hostname" {
+#   hostname            = "back.${var.client}.${var.environment}.${var.main_domain_name}"
+#   app_service_name    = azurerm_function_app_flex_consumption.functionback.name
+#   resource_group_name = azurerm_resource_group.rgback.name
+# }
 
 resource "azurerm_role_assignment" "roleassignmentbackclients" {
   scope                = azurerm_resource_group.rgback.id

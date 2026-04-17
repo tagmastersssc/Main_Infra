@@ -13,7 +13,7 @@ module "Client3" {
   serviceprincipalbackclients_object_id  = azuread_service_principal.serviceprincipalbackclientsinvoice.object_id
   serviceprincipalfrontclients_object_id = azuread_service_principal.serviceprincipalfrontclientsinvoice.object_id
   main_login_front_url                   = "https://${var.login_application}.${local.environment}.${var.main_domain_name}"
-  main_login_back_url                    = "https://back.${var.login_application}.${local.environment}.${var.main_domain_name}"
+  main_login_back_url                    = "https://${var.business_unit}-${var.login_application}-back-${local.name_suffix}.azurewebsites.net"
   cognitive_account_sku                  = "S0"
   cognitive_deployment_model_name        = "gpt-5-nano"
   cognitive_deployment_model_version     = "2025-08-07"

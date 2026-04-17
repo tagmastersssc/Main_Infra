@@ -2,8 +2,8 @@
 module "Main_Login" {
   source                       = "./main_login"
   application                  = var.login_application
-  location                     = "eastus"
-  business_unit                = "Main"
+  location                     = var.location
+  business_unit                = var.business_unit
   client                       = var.client
   github_main_back_login_repo  = var.github_main_back_login_repo
   github_main_front_login_repo = var.github_main_front_login_repo
