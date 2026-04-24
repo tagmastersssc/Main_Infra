@@ -1,8 +1,8 @@
 
 resource "azurerm_resource_group" "rgback" {
-  name                  = "rg-${var.name_prefix}-back-${var.name_suffix}-${var.client}"
-  location              = var.location
-  tags                  = var.tags
+  name     = "rg-${var.name_prefix}-back-${var.name_suffix}-${var.client}"
+  location = var.location
+  tags     = var.tags
 }
 
 resource "azurerm_storage_account" "backstorageaccount" {
@@ -12,7 +12,7 @@ resource "azurerm_storage_account" "backstorageaccount" {
   account_tier             = "Standard"
   account_replication_type = "LRS"
 
-  tags                      = var.tags
+  tags = var.tags
 }
 
 resource "azurerm_storage_account" "backstoragetableaccount" {
@@ -22,7 +22,7 @@ resource "azurerm_storage_account" "backstoragetableaccount" {
   account_tier             = "Standard"
   account_replication_type = "LRS"
 
-  tags                      = var.tags
+  tags = var.tags
 }
 
 resource "azurerm_storage_table" "storagetable" {
@@ -37,17 +37,17 @@ resource "azurerm_storage_container" "storagecontainer" {
 }
 
 resource "azurerm_service_plan" "aspback" {
-  name                  = "asp-${var.name_prefix}-back-${var.name_suffix}-${var.client}"
-  resource_group_name   = azurerm_resource_group.rgback.name
-  location              = azurerm_resource_group.rgback.location
-  os_type               = "Linux"
-  sku_name              = "FC1"
-  tags                  = var.tags
-  
+  name                = "asp-${var.name_prefix}-back-${var.name_suffix}-${var.client}"
+  resource_group_name = azurerm_resource_group.rgback.name
+  location            = azurerm_resource_group.rgback.location
+  os_type             = "Linux"
+  sku_name            = "FC1"
+  tags                = var.tags
+
 }
 
 resource "azurerm_function_app_flex_consumption" "functionback" {
-  name                       = "${var.client}-back-${var.name_suffix}"
+  name                        = "${var.client}-back-${var.name_suffix}"
   resource_group_name         = azurerm_resource_group.rgback.name
   location                    = azurerm_resource_group.rgback.location
   service_plan_id             = azurerm_service_plan.aspback.id
@@ -55,34 +55,40 @@ resource "azurerm_function_app_flex_consumption" "functionback" {
   storage_container_endpoint  = "${azurerm_storage_account.backstorageaccount.primary_blob_endpoint}${azurerm_storage_container.storagecontainer.name}"
   storage_authentication_type = "StorageAccountConnectionString"
   storage_access_key          = azurerm_storage_account.backstorageaccount.primary_access_key
-  runtime_version = "3.13"
-  runtime_name = "python"
+  runtime_version             = "3.13"
+  runtime_name                = "python"
 
   connection_string {
-    name = "StorageTable"
-    type = "Custom"
+    name  = "StorageTable"
+    type  = "Custom"
     value = azurerm_storage_account.backstoragetableaccount.primary_connection_string
   }
 
   site_config {
     scm_ip_restriction {
-      priority      = "100"
-      action        = "Allow"
-      service_tag   = "AzureCloud"
-      name          = "AzureGitHub"
+      priority    = "100"
+      action      = "Allow"
+      service_tag = "AzureCloud"
+      name        = "AzureGitHub"
     }
     cors {
-      allowed_origins = var.cors_allowed_origins
+      allowed_origins     = var.cors_allowed_origins
+      support_credentials = true
     }
   }
 
-  app_settings          = var.app_settings
-  tags                  = var.tags
+  app_settings = var.app_settings
+  tags         = var.tags
 }
+
+# resource "azurerm_app_service_custom_hostname_binding" "custom_hostname" {
+#   hostname            = "back.${var.client}.${var.environment}.${var.main_domain_name}"
+#   app_service_name    = azurerm_function_app_flex_consumption.functionback.name
+#   resource_group_name = azurerm_resource_group.rgback.name
+# }
 
 resource "azurerm_role_assignment" "roleassignmentbackclients" {
-  scope                 = azurerm_resource_group.rgback.id
-  role_definition_name  = "Contributor"
-  principal_id          = var.serviceprincipalbackclients_object_id
+  scope                = azurerm_resource_group.rgback.id
+  role_definition_name = "Contributor"
+  principal_id         = var.serviceprincipalbackclients_object_id
 }
-

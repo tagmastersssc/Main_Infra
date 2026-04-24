@@ -3,6 +3,9 @@ terraform {
     azurerm = {
       source = "hashicorp/azurerm"
     }
+    random = {
+      source = "hashicorp/random"
+    }
   }
 
   backend "azurerm" {
@@ -16,6 +19,9 @@ terraform {
 
 provider "azurerm" {
   features {
+    key_vault {
+      purge_soft_deleted_secrets_on_destroy = true
+    }
   }
   subscription_id = var.subscription_id
   tenant_id       = var.tenant_id

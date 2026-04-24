@@ -1,61 +1,91 @@
 
+resource "random_password" "client_exchange_secret" {
+  length  = 48
+  special = false
+}
+
+resource "random_password" "client_session_secret" {
+  length  = 64
+  special = false
+}
+
 module "Back" {
-    source                                          = "../../../modules/back/"
-    name_prefix                                     = local.name_prefix
-    name_suffix                                     = local.name_suffix
-    location                                        = var.location
-    environment                                     = local.environment
-    client                                          = var.client
-    tags                                            = local.tags
-    serviceprincipalbackclients_object_id           = var.serviceprincipalbackclients_object_id
-    app_settings                                    = {
-        OPENAI_ENDPOINT                             = "${module.OpenAI.azurerm_ai_services_endpoint}/openai/v1"
-        OPENAI_KEY                                  = module.OpenAI.azurerm_ai_services_primary_access_key
-        OPENAI_DEPLOYMENT_MODEL_NAME                = module.OpenAI.azurerm_cognitive_deployment_model_name
-    }
-    cors_allowed_origins                             = ["*"] #["https://portal.azure.com","https://functions.azure.com","".....] cambiar cuando se tenga el dominio
+  source                                = "../../../modules/back/"
+  name_prefix                           = local.name_prefix
+  name_suffix                           = local.name_suffix
+  location                              = var.location
+  environment                           = local.environment
+  client                                = var.client
+  tags                                  = local.tags
+  serviceprincipalbackclients_object_id = var.serviceprincipalbackclients_object_id
+  main_domain_name                       = var.main_domain_name
+  app_settings = {
+    OPENAI_ENDPOINT              = "${module.OpenAI.azurerm_ai_services_endpoint}/openai/v1"
+    OPENAI_KEY                   = module.OpenAI.azurerm_ai_services_primary_access_key
+    OPENAI_DEPLOYMENT_MODEL_NAME = module.OpenAI.azurerm_cognitive_deployment_model_name
+    MAIN_LOGIN_BACK_URL          = var.main_login_back_url
+    BILAI_TENANT_ID              = local.tenant_id
+    BILAI_TENANT_EXCHANGE_SECRET = random_password.client_exchange_secret.result
+    CLIENTS_FRONT_URL            = "https://${module.Front.azurerm_static_web_app_hostname}"
+    CLIENTS_SESSION_SECRET       = random_password.client_session_secret.result
+    CLIENTS_SESSION_TTL_SECONDS  = "28800"
+    SESSION_COOKIE_NAME          = "bilai_client_session"
+    SESSION_COOKIE_DOMAIN        = ""
+    SESSION_COOKIE_PATH          = "/"
+    SESSION_COOKIE_SAMESITE      = "none"
+    SESSION_COOKIE_SECURE        = "true"
+    VITE_LOGIN_APP_URL           = var.main_login_front_url
+    VITE_API_URL                 = "/api"
+    VITE_APP_TENANT_ID           = local.tenant_id
+    ALLOWED_ORIGINS              = "https://${module.Front.azurerm_static_web_app_hostname}"
+    RAW_API_BASE_URL             = ""
+    RAW_API_KEY                  = ""
+    RAW_API_KEY_IN_HEADER        = "false"
+    RAW_API_KEY_HEADER_NAME      = "x-functions-key"
+    RAW_API_TIMEOUT_SECONDS      = "15"
+  }
+  cors_allowed_origins = ["https://${module.Front.azurerm_static_web_app_hostname}"]
 }
 
 module "Front" {
-    source                                          = "../../../modules/front/"
-    name_prefix                                     = local.name_prefix
-    name_suffix                                     = local.name_suffix
-    location                                        = var.location
-    environment                                     = local.environment
-    client                                          = var.client
-    tags                                            = local.tags
-    sku                                             = var.sku
-    custom_domain_front                             = var.custom_domain_front
-    serviceprincipalfrontclients_object_id          = var.serviceprincipalfrontclients_object_id
-    app_settings                                    = {
-        # REACT_APP_BACKEND_URL                       = module.Back.azurerm_function_hostname
-    }
-    main_login_front_default_hostname               = var.main_login_front_default_hostname
-    backend_api_url                                 = module.Back.azurerm_function_hostname
+  source                                 = "../../../modules/front/"
+  name_prefix                            = local.name_prefix
+  name_suffix                            = local.name_suffix
+  location                               = var.location
+  environment                            = local.environment
+  client                                 = var.client
+  tags                                   = local.tags
+  sku                                    = var.sku
+  serviceprincipalfrontclients_object_id = var.serviceprincipalfrontclients_object_id
+  main_login_front_default_hostname      = replace(var.main_login_front_url, "https://", "")
+  backend_api_url                        = local.client_back_api_url
+  runtime_config_url                     = local.client_runtime_config_url
+  tenant_id                              = local.tenant_id
+  main_domain_name                       = var.main_domain_name
 }
 
 module "TableStorage" {
-    source                                          = "../../../modules/tablestorage/"
-    name_prefix                                     = local.name_prefix
-    name_suffix                                     = local.name_suffix
-    location                                        = var.location
-    environment                                     = local.environment
-    client                                          = var.client
-    tags                                            = local.tags
-    serviceprincipalbackclients_object_id           = var.serviceprincipalbackclients_object_id
+  source                                = "../../../modules/tablestorage/"
+  name_prefix                           = local.name_prefix
+  name_suffix                           = local.name_suffix
+  location                              = var.location
+  environment                           = local.environment
+  client                                = var.client
+  tags                                  = local.tags
+  serviceprincipalbackclients_object_id = var.serviceprincipalbackclients_object_id
 }
 
 module "OpenAI" {
-    source                                          = "../../../modules/openai/"
-    name_prefix                                     = local.name_prefix
-    name_suffix                                     = local.name_suffix
-    location                                        = var.location
-    environment                                     = local.environment
-    client                                          = var.client
-    tags                                            = local.tags
-    cognitive_account_sku                           = var.cognitive_account_sku
-    cognitive_deployment_model_name                 = var.cognitive_deployment_model_name
-    cognitive_deployment_model_version              = var.cognitive_deployment_model_version
-    cognitive_deployment_sku_name                   = var.cognitive_deployment_sku_name
-  
+  source                             = "../../../modules/openai/"
+  name_prefix                        = local.name_prefix
+  name_suffix                        = local.name_suffix
+  location                           = var.location
+  environment                        = local.environment
+  client                             = var.client
+  tags                               = local.tags
+  cognitive_account_sku              = var.cognitive_account_sku
+  cognitive_deployment_model_name    = var.cognitive_deployment_model_name
+  cognitive_deployment_model_version = var.cognitive_deployment_model_version
+  cognitive_deployment_sku_name      = var.cognitive_deployment_sku_name
+
 }

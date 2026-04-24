@@ -3,69 +3,36 @@ data "azurerm_client_config" "current" {}
 
 resource "azurerm_resource_group" "rgfront" {
   name     = "rg-${local.name_prefix}-front-${local.name_suffix}"
-  location = local.location
+  location = var.main_static_web_app_location
   tags     = local.tags
 }
 
-resource "azurerm_service_plan" "aspfront" {
-  name                = "asp-${local.name_prefix}-front-${local.name_suffix}"
+resource "azurerm_static_web_app" "static_web_app" {
+  name                = "${var.client}-front-${local.name_suffix}"
   resource_group_name = azurerm_resource_group.rgfront.name
   location            = azurerm_resource_group.rgfront.location
-  os_type             = "Linux"
-  sku_name            = "F1"
+  sku_size            = var.static_web_app_sku
+  sku_tier            = var.static_web_app_sku
   tags                = local.tags
-
+  lifecycle {
+    ignore_changes = [repository_branch, repository_url]
+  }
 }
 
-resource "azurerm_linux_web_app" "webappfront" {
-  name                = "webapp-${local.name_prefix}-front-${local.name_suffix}"
-  resource_group_name = azurerm_resource_group.rgfront.name
-  location            = azurerm_service_plan.aspfront.location
-  service_plan_id     = azurerm_service_plan.aspfront.id
-
-  site_config {
-    always_on = false
-    application_stack {
-      node_version = "22-lts"
-    }
-    app_command_line = "pm2 serve /home/site/wwwroot --no-daemon"
-  }
-  tags = local.tags
+resource "azurerm_static_web_app_custom_domain" "custom_domain" {
+  static_web_app_id = azurerm_static_web_app.static_web_app.id
+  domain_name       = "${local.environment}.${var.main_domain_name}"
+  validation_type   = "cname-delegation"
 }
 
 resource "azurerm_key_vault" "keyvaultfrontmain" {
-  name                       = "main${local.name_suffix}"
+  name                       = "main${local.environment}-${azurerm_resource_group.rgfront.location}"
   location                   = azurerm_resource_group.rgfront.location
   resource_group_name        = azurerm_resource_group.rgfront.name
   tenant_id                  = data.azurerm_client_config.current.tenant_id
   sku_name                   = "standard"
   rbac_authorization_enabled = true
   tags                       = local.tags
-
-  # access_policy {
-  #   tenant_id = data.azuread_client_config.current.tenant_id
-  #   object_id = data.azuread_client_config.current.object_id
-
-  #   secret_permissions = [
-  #     "Delete",
-  #     "Get",
-  #     "Set",
-  #     "List",
-  #     "Purge",
-  #   ]
-  # }
-  # access_policy {
-  #   tenant_id = data.azuread_client_config.current.tenant_id
-  #   object_id = azuread_service_principal.serviceprincipalfront.object_id
-
-  #   secret_permissions = [
-  #     "Delete",
-  #     "Get",
-  #     "Set",
-  #     "List",
-  #     "Purge",
-  #   ]
-  # }
 }
 
 resource "azurerm_role_assignment" "roleassignemntkeyvaultfrontmain" {
