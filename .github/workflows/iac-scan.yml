@@ -4,11 +4,10 @@ on:
     branches:
       - main
 
-permissions:
-  contents: write 
-
 jobs:
   tfsec:
+    permissions:
+      contents: write 
     name: tfsec sarif report
     runs-on: ubuntu-latest
 
