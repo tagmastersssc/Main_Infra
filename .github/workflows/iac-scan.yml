@@ -6,11 +6,13 @@ on:
 permissions:
   contents: write
   id-token: write
+  security-events: write
 jobs:
   tfsec:
     permissions:
       contents: write
-      id-token: write 
+      id-token: write
+      security-events: write
     name: tfsec sarif report
     runs-on: ubuntu-latest
 
