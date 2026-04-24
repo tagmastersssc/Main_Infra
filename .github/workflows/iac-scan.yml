@@ -1,0 +1,31 @@
+name: tfsec
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  tfsec:
+    name: tfsec sarif report
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Clone repo
+      uses: actions/checkout@master
+    - name: Run Checkov
+      uses: bridgecrewio/checkov-action@v12
+      with:
+       directory: infrastructure/
+       framework: terraform,kubernetes
+       output_format: sarif
+       output_file_path: checkov-results.sarif
+       soft_fail: true
+    - name: Upload Checkov results
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+       sarif_file: checkov-results.sarif
+    - name: Run tfsec
+      uses: aquasecurity/tfsec-action@v1.0.3
+      with:
+       working_directory: infrastructure/terraform
+       soft_fail: true
