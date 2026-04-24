@@ -22,6 +22,11 @@ resource "azurerm_storage_account" "backstorageaccount" {
   tags = local.tags
 }
 
+resource "azurerm_storage_table" "usersstoragetable" {
+  name                 = "Users"
+  storage_account_name = azurerm_storage_account.backstorageaccount.name
+}
+
 resource "azurerm_storage_container" "storagecontainer" {
   name                  = "${lower(var.client)}${local.environment}-flexcontainer"
   storage_account_id    = azurerm_storage_account.backstorageaccount.id
@@ -78,7 +83,11 @@ resource "azurerm_function_app_flex_consumption" "webappbacklogin" {
     ALLOWED_EMAILS                = ""
     SSO_STATE_TTL_SECONDS         = "900"
     ALLOWED_ORIGINS               = "https://${var.application}.${local.environment}.${var.main_domain_name},https://${var.main_front_url}"
-
+  }
+  connection_string {
+    name  = "StorageTable"
+    type  = "Custom"
+    value = azurerm_storage_account.backstorageaccount.primary_connection_string
   }
   site_config {
     scm_ip_restriction {
