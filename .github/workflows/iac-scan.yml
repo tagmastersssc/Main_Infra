@@ -3,11 +3,14 @@ on:
   push:
     branches:
       - main
-
+permissions:
+  contents: write
+  id-token: write
 jobs:
   tfsec:
     permissions:
-      contents: write 
+      contents: write
+      id-token: write 
     name: tfsec sarif report
     runs-on: ubuntu-latest
 
