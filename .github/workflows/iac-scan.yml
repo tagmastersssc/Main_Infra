@@ -3,16 +3,13 @@ on:
   push:
     branches:
       - main
-permissions:
-  contents: write
-  id-token: write
-  security-events: write
+
 jobs:
   tfsec:
     permissions:
-      contents: write
-      id-token: write
-      security-events: write
+      security-events: write  # Required to upload SARIF results
+      actions: read           # Required for private repositories
+      contents: read          # Required for checkout
     name: tfsec sarif report
     runs-on: ubuntu-latest
 
