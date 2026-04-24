@@ -12,14 +12,8 @@ module "Main_Login" {
   static_web_app_location      = "eastus2"
   main_domain_name             = var.main_domain_name
 
-  default_customer_tenant_id = ""
-  tenant_registry_json = jsonencode({
-    (module.Client3.tenant_id) = {
-      clients_front_url     = module.Client3.front_url
-      clients_backend_url   = "https://${module.Client3.back_azurerm_function_hostname}"
-      exchange_secret       = module.Client3.client_exchange_secret
-      allowed_emails        = local.client3_allowed_emails
-      allowed_email_domains = local.client3_allowed_email_domains
-    }
-  })
+  default_customer_tenant_id   = ""
+  tenant_registry_json         = jsonencode({})
+  clients_backend_url_template = "https://{tenant_slug}-back-${local.environment}-${var.clients_invoice_location}.azurewebsites.net"
+  tenant_exchange_secret       = random_password.clients_invoice_tenant_exchange_secret.result
 }

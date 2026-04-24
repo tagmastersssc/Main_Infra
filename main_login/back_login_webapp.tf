@@ -44,10 +44,10 @@ resource "azurerm_service_plan" "aspbacklogin" {
 }
 
 resource "azurerm_function_app_flex_consumption" "webappbacklogin" {
-  name                = "${local.name_prefix}-back-${local.name_suffix}"
-  resource_group_name = azurerm_resource_group.rgbacklogin.name
-  location            = azurerm_service_plan.aspbacklogin.location
-  service_plan_id     = azurerm_service_plan.aspbacklogin.id
+  name                        = "${local.name_prefix}-back-${local.name_suffix}"
+  resource_group_name         = azurerm_resource_group.rgbacklogin.name
+  location                    = azurerm_service_plan.aspbacklogin.location
+  service_plan_id             = azurerm_service_plan.aspbacklogin.id
   storage_container_type      = "blobContainer"
   storage_container_endpoint  = "${azurerm_storage_account.backstorageaccount.primary_blob_endpoint}${azurerm_storage_container.storagecontainer.name}"
   storage_authentication_type = "StorageAccountConnectionString"
@@ -55,13 +55,13 @@ resource "azurerm_function_app_flex_consumption" "webappbacklogin" {
   runtime_version             = "3.13"
   runtime_name                = "python"
   app_settings = {
-    ENABLE_PASSWORD_AUTH          = "false",
-    OIDC_TENANT_ID                = data.azuread_client_config.current.tenant_id
-    OIDC_DISCOVERY_URL            = "https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration"
-    OIDC_CLIENT_ID                = azuread_application.applicationuserlogin.client_id
-    OIDC_CLIENT_SECRET            = azuread_application_password.applicationuserloginpassword.value
-    OIDC_PUBLIC_CLIENT            = "false"
-    OIDC_SCOPE                    = "openid profile email"
+    ENABLE_PASSWORD_AUTH = "false",
+    OIDC_TENANT_ID       = data.azuread_client_config.current.tenant_id
+    OIDC_DISCOVERY_URL   = "https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration"
+    OIDC_CLIENT_ID       = azuread_application.applicationuserlogin.client_id
+    OIDC_CLIENT_SECRET   = azuread_application_password.applicationuserloginpassword.value
+    OIDC_PUBLIC_CLIENT   = "false"
+    OIDC_SCOPE           = "openid profile email"
     # SSO_REDIRECT_URI              = "https://back.${var.application}.${local.environment}.${var.main_domain_name}/auth/sso/callback"
     SSO_REDIRECT_URI              = "https://${local.name_prefix}-back-${local.name_suffix}.azurewebsites.net/auth/sso/callback"
     OIDC_PROVIDER_HINT_PARAM      = "idp"
@@ -74,12 +74,13 @@ resource "azurerm_function_app_flex_consumption" "webappbacklogin" {
     SESSION_COOKIE_SECURE         = "true"
     LOGIN_FRONT_URL               = "https://${var.application}.${local.environment}.${var.main_domain_name}"
     CLIENTS_APP_URL               = ""
+    CLIENTS_BACKEND_URL_TEMPLATE  = var.clients_backend_url_template
     CLIENTS_BACKEND_URL           = ""
     DEFAULT_TENANT_ID             = var.default_customer_tenant_id
-    TENANT_EXCHANGE_SECRET        = ""
+    TENANT_EXCHANGE_SECRET        = var.tenant_exchange_secret
     TENANT_LOGIN_CODE_TTL_SECONDS = "300"
     TENANT_CONFIG_JSON            = var.tenant_registry_json
-    REQUIRE_ALLOWLIST             = "true"
+    REQUIRE_ALLOWLIST             = "false"
     ALLOWED_EMAILS                = ""
     SSO_STATE_TTL_SECONDS         = "900"
     ALLOWED_ORIGINS               = "https://${var.application}.${local.environment}.${var.main_domain_name},https://${var.main_front_url}"

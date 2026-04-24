@@ -13,3 +13,4 @@ variable "cognitive_deployment_model_name" {}
 variable "cognitive_deployment_model_version" {}
 variable "cognitive_deployment_sku_name" {}
 variable "main_domain_name" {}
+variable "tenant_exchange_secret" {}

@@ -19,7 +19,7 @@ resource "azuread_application_redirect_uris" "applicationuserloginredirecturis" 
   application_id = azuread_application.applicationuserlogin.id
   type           = "Web"
   # redirect_uris  = ["https://back.${var.application}.${local.environment}.${var.main_domain_name}/auth/sso/callback", "http://localhost:8000/auth/sso/callback"]
-  redirect_uris  = ["https://${azurerm_function_app_flex_consumption.webappbacklogin.default_hostname}/auth/sso/callback", "http://localhost:8000/auth/sso/callback"]
+  redirect_uris = ["https://${azurerm_function_app_flex_consumption.webappbacklogin.default_hostname}/auth/sso/callback", "http://localhost:8000/auth/sso/callback"]
 
 }
 

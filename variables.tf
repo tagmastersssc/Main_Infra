@@ -18,3 +18,4 @@ variable "github_main_front_login_repo" {}
 variable "static_web_app_sku" {}
 variable "main_static_web_app_location" {}
 variable "main_domain_name" {}
+variable "clients_invoice_location" {}
