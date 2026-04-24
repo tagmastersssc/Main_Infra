@@ -15,8 +15,8 @@ jobs:
     - name: Run Checkov
       uses: bridgecrewio/checkov-action@v12
       with:
-       directory: infrastructure/
-       framework: terraform,kubernetes
+       directory: /
+       framework: terraform
        output_format: sarif
        output_file_path: checkov-results.sarif
        soft_fail: true
@@ -27,5 +27,4 @@ jobs:
     - name: Run tfsec
       uses: aquasecurity/tfsec-action@v1.0.3
       with:
-       working_directory: infrastructure/terraform
        soft_fail: true
