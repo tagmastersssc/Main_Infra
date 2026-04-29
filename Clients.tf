@@ -1,12 +1,12 @@
-locals {
-  client3_allowed_emails        = ["santiagomejia.r02@gmail.com", "smejiar@unbosque.edu.co", "gonzalez915@outlook.com"]
-  client3_allowed_email_domains = []
+resource "random_password" "clients_invoice_tenant_exchange_secret" {
+  length  = 48
+  special = false
 }
 
 module "Client3" {
   source                                 = "./clients/invoice/Client"
   application                            = "Invoice"
-  location                               = "centralus"
+  location                               = var.clients_invoice_location
   business_unit                          = "Invoice"
   client                                 = "Client3"
   sku                                    = "Free"
@@ -19,4 +19,5 @@ module "Client3" {
   cognitive_deployment_model_version     = "2025-08-07"
   cognitive_deployment_sku_name          = "GlobalStandard"
   main_domain_name                       = var.main_domain_name
+  tenant_exchange_secret                 = random_password.clients_invoice_tenant_exchange_secret.result
 }

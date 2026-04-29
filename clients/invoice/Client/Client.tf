@@ -1,9 +1,4 @@
 
-resource "random_password" "client_exchange_secret" {
-  length  = 48
-  special = false
-}
-
 resource "random_password" "client_session_secret" {
   length  = 64
   special = false
@@ -18,14 +13,14 @@ module "Back" {
   client                                = var.client
   tags                                  = local.tags
   serviceprincipalbackclients_object_id = var.serviceprincipalbackclients_object_id
-  main_domain_name                       = var.main_domain_name
+  main_domain_name                      = var.main_domain_name
   app_settings = {
     OPENAI_ENDPOINT              = "${module.OpenAI.azurerm_ai_services_endpoint}/openai/v1"
     OPENAI_KEY                   = module.OpenAI.azurerm_ai_services_primary_access_key
     OPENAI_DEPLOYMENT_MODEL_NAME = module.OpenAI.azurerm_cognitive_deployment_model_name
     MAIN_LOGIN_BACK_URL          = var.main_login_back_url
     BILAI_TENANT_ID              = local.tenant_id
-    BILAI_TENANT_EXCHANGE_SECRET = random_password.client_exchange_secret.result
+    BILAI_TENANT_EXCHANGE_SECRET = var.tenant_exchange_secret
     CLIENTS_FRONT_URL            = "https://${module.Front.azurerm_static_web_app_hostname}"
     CLIENTS_SESSION_SECRET       = random_password.client_session_secret.result
     CLIENTS_SESSION_TTL_SECONDS  = "28800"

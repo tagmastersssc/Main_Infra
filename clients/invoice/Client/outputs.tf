@@ -15,5 +15,5 @@ output "front_url" {
 }
 
 output "client_exchange_secret" {
-  value = random_password.client_exchange_secret.result
+  value = var.tenant_exchange_secret
 }
